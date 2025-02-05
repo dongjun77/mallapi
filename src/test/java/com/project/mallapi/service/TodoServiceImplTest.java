@@ -2,6 +2,7 @@ package com.project.mallapi.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.TodoDTO;
 import java.time.LocalDate;
 import lombok.extern.log4j.Log4j2;
@@ -34,5 +35,14 @@ class TodoServiceImplTest {
                 .build();
 
         log.info(todoService.register(todoDTO));
+    }
+
+    @Test
+    public void testGetList() {
+
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(11).build();
+
+        log.info(todoService.getList(pageRequestDTO));
+
     }
 }
