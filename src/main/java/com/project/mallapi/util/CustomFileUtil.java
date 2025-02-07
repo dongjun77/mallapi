@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
+import net.coobird.thumbnailator.Thumbnailator;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +23,7 @@ public class CustomFileUtil {
     @Value("${org.zerock.upload.path}")
     private String uploadPath;
 
-    @PostConstruct
+    @PostConstruct //Spring이 빈을 생성한 후 실행되는 메서드
     public void init() {
 
         File tempFolder = new File(uploadPath);
@@ -51,8 +53,20 @@ public class CustomFileUtil {
             Path savePath = Paths.get(uploadPath, savedName);
 
             try {
-                Files.copy(file.getInputStream(), savePath);
+                Files.copy(file.getInputStream(), savePath); // 원본 파일 업로드
+
+                String contentType = file.getContentType(); // Mime type
+
+                // 이미지 파일이라면
+                if(contentType != null || contentType.startsWith("image")) {
+
+                    Path thumbnailPath = Paths.get(uploadPath, "s_" + savedName);
+
+                    Thumbnails.of(savePath.toFile()).size(200,200).toFile(thumbnailPath.toFile());
+                }
+
                 uploadNames.add(savedName);
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
