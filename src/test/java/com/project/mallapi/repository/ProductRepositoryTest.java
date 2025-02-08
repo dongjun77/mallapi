@@ -3,13 +3,19 @@ package com.project.mallapi.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.project.mallapi.domain.Product;
+import com.project.mallapi.dto.PageRequestDTO;
 import jakarta.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Commit;
 
 @SpringBootTest
@@ -21,16 +27,21 @@ class ProductRepositoryTest {
 
     @Test
     public void testInsert() {
-        Product product = Product.builder()
-                .pname("Test ")
-                .pdesc("Test Desc")
-                .price(1000)
-                .build();
 
-        product.addImageString(UUID.randomUUID()+"_"+"IMAGE1.jpg");
-        product.addImageString(UUID.randomUUID()+"_"+"IMAGE2.jpg");
+        for(int i=0; i<10; i++) {
 
-        productRepository.save(product);
+            Product product = Product.builder()
+                    .pname("Test ")
+                    .pdesc("Test Desc")
+                    .price(1000)
+                    .build();
+
+            product.addImageString(UUID.randomUUID()+"_"+"IMAGE1.jpg");
+            product.addImageString(UUID.randomUUID()+"_"+"IMAGE2.jpg");
+
+            productRepository.save(product);
+        }
+
     }
 
     @Test
@@ -87,6 +98,25 @@ class ProductRepositoryTest {
         product.addImageString(UUID.randomUUID()+"_"+"PIMAGE3.jpg");
 
         productRepository.save(product);
+    }
+
+    @Test
+    public void testList() {
+
+        Pageable pageable = PageRequest.of(0,10, Sort.by("pno").descending());
+
+        Page<Object[]> result = productRepository.selectList(pageable);
+
+        result.getContent().forEach(arr -> log.info(Arrays.toString(arr)));
+
+    }
+
+    @Test
+    public void testSearch() {
+
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder().build();
+
+        productRepository.searchList(pageRequestDTO);
 
     }
 
