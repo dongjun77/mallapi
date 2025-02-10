@@ -99,7 +99,7 @@ public class CustomFileUtil {
 
     public void deleteFiles(List<String> fileNames) {
 
-        if(fileNames == null || fileNames.size() == 0) {
+        if(fileNames == null || fileNames.isEmpty()) {
             return;
         }
 
