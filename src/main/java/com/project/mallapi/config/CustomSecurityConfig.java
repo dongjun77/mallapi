@@ -3,6 +3,7 @@ package com.project.mallapi.config;
 import com.project.mallapi.security.filter.JWTCheckFilter;
 import com.project.mallapi.security.handler.APILoginFailHandler;
 import com.project.mallapi.security.handler.APILoginSuccessHandler;
+import com.project.mallapi.security.handler.CustomAccessDeniedHandler;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -47,6 +48,10 @@ public class CustomSecurityConfig {
         });
 
         http.addFilterBefore(new JWTCheckFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling(config -> {
+            config.accessDeniedHandler(new CustomAccessDeniedHandler());
+        });
 
         return http.build();
     }
