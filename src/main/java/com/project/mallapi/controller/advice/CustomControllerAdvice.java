@@ -1,5 +1,6 @@
 package com.project.mallapi.controller.advice;
 
+import com.project.mallapi.util.CustomJWTException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
@@ -14,12 +15,24 @@ public class CustomControllerAdvice {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<?> notExist(NoSuchElementException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("msg", e.getMessage()));
+        String msg = e.getMessage();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("msg", msg));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> notExist(MethodArgumentNotValidException e) {
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(Map.of("msg", e.getMessage()));
+
+        String msg = e.getMessage();
+
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(Map.of("msg", msg));
+    }
+
+    @ExceptionHandler(CustomJWTException.class)
+    protected ResponseEntity<?> handleJWTException(CustomJWTException e) {
+
+        String msg = e.getMessage();
+
+        return ResponseEntity.ok().body(Map.of("error", msg));
     }
 
 }
