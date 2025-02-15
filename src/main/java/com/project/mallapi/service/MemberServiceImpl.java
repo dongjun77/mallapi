@@ -3,6 +3,7 @@ package com.project.mallapi.service;
 import com.project.mallapi.domain.Member;
 import com.project.mallapi.domain.MemberRole;
 import com.project.mallapi.dto.MemberDTO;
+import com.project.mallapi.dto.MemberModifyDTO;
 import com.project.mallapi.repository.MemberRepository;
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -55,6 +56,20 @@ public class MemberServiceImpl implements MemberService {
         MemberDTO memberDTO = entityToDTO(socialMember);
 
         return memberDTO;
+    }
+
+    @Override
+    public void modifyMember(MemberModifyDTO memberModifyDTO) {
+
+        Optional<Member> result = memberRepository.findById(memberModifyDTO.getEmail());
+
+        Member member = result.orElseThrow();
+
+        member.changeNickname(memberModifyDTO.getNickname());
+        member.changeSocial(false);
+        member.changePw(passwordEncoder.encode(memberModifyDTO.getPw()));
+
+        memberRepository.save(member);
     }
 
     private Member makeSocialMember(String email) {

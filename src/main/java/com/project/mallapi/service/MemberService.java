@@ -2,6 +2,7 @@ package com.project.mallapi.service;
 
 import com.project.mallapi.domain.Member;
 import com.project.mallapi.dto.MemberDTO;
+import com.project.mallapi.dto.MemberModifyDTO;
 import jakarta.transaction.Transactional;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,8 @@ import java.util.stream.Collectors;
 public interface MemberService {
 
     MemberDTO getKakaoMember(String accessToken);
+
+    void modifyMember(MemberModifyDTO memberModifyDTO);
 
     default MemberDTO entityToDTO(Member member) {
 
