@@ -23,7 +23,7 @@ import lombok.ToString;
 @ToString(exclude = {"cart", "product"})
 @Table(name ="tbl_cart_item", indexes = {
         @Index(columnList = "cart_cno", name="idx_cartitem_cart"),
-        @Index(columnList = "product_cno, cart_cno", name="idx_cartitem_pno_cart")
+        @Index(columnList = "product_pno, cart_cno", name="idx_cartitem_pno_cart")
 })
 public class CartItem {
 
