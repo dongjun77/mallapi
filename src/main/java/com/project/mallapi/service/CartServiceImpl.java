@@ -33,11 +33,13 @@ public class CartServiceImpl implements CartService {
 
         // 기존에 담겨 있는 상품에 대한 처리
         if(cino != null){
-            Optional<CartItem> cartItemResult = cartItemRepository.findById(pno);
+            Optional<CartItem> cartItemResult = cartItemRepository.findById(cino);
 
             CartItem cartItem = cartItemResult.orElseThrow();
 
             cartItem.changQty(qty);
+
+            log.info("cino != null"+cartItem.getQty());
 
             cartItemRepository.save(cartItem);
 
@@ -57,6 +59,7 @@ public class CartServiceImpl implements CartService {
             cartItem.changQty(qty);
         }
 
+        log.info("cino == null"+cartItem.getQty());
         cartItemRepository.save(cartItem);
 
         return getCartItems(email);

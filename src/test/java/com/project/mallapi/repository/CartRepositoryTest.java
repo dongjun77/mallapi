@@ -29,7 +29,7 @@ public class CartRepositoryTest {
     @Test
     public void testInsertByProduct() {
 
-        String email = "user1@aaa.com";
+        String email = "user9@aaa.com";
         Long pno = 8L;
         int qty = 3;
 
@@ -84,7 +84,7 @@ public class CartRepositoryTest {
     @Test
     public void testUpdateByCino() {
 
-        Long cino = 1L;
+        Long cino = 6L;
         int qty = 4;
 
         Optional<CartItem> result = cartItemRepository.findById(cino);
