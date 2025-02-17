@@ -51,10 +51,12 @@ public class ProductController {
 
     @GetMapping("/view/{fileName}")
     public ResponseEntity<Resource> viewFileGet(@PathVariable("fileName") String fileName) {
+        log.info("viewFileGet=================");
+        log.info("fileName:" + fileName);
         return fileUtil.getFile(fileName);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @GetMapping("/list")
     public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
 

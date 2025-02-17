@@ -53,6 +53,13 @@ public class CustomSecurityConfig {
             config.accessDeniedHandler(new CustomAccessDeniedHandler());
         });
 
+        // 🔥 ORB 해결을 위한 추가적인 응답 헤더 설정
+        http.headers(headers ->
+                headers.addHeaderWriter((request, response) -> {
+                    response.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+                })
+        );
+
         return http.build();
     }
 
@@ -71,9 +78,8 @@ public class CustomSecurityConfig {
         // 특정 도메인만 허용 (또는 모든 도메인 허용)
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // 프론트엔드 도메인 추가
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "Cross-Origin-Resource-Policy"));
         configuration.setAllowCredentials(true); // 크리덴셜(쿠키, 인증 정보) 허용
-
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

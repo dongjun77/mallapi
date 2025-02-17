@@ -82,7 +82,7 @@ public class CustomFileUtil {
 
         Resource resource = new FileSystemResource(uploadPath+File.separator+fileName);
 
-        if (!resource.isReadable()) { // 읽을수 없다면
+        if (!resource.isReadable()) { // fileName이 존재하지 않다면
             resource = new FileSystemResource(uploadPath+File.separator+"default.jpeg");
         }
         HttpHeaders headers = new HttpHeaders();
