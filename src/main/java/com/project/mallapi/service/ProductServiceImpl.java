@@ -6,6 +6,7 @@ import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.PageResponseDTO;
 import com.project.mallapi.dto.ProductDTO;
 import com.project.mallapi.repository.ProductRepository;
+import com.project.mallapi.util.CustomFileUtil;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +24,8 @@ import org.springframework.stereotype.Service;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+
+    private final CustomFileUtil customFileUtil;
 
     @Override
     public PageResponseDTO<ProductDTO> getList(PageRequestDTO pageRequestDTO) {
@@ -51,6 +54,9 @@ public class ProductServiceImpl implements ProductService {
                     .build();
 
             String imageStr = productImage.getFileName();
+//            if (imageStr == null) {
+//                imageStr = "default.jpeg";
+//            }
             productDTO.setUploadFileNames(List.of(imageStr));
 
             return productDTO;
