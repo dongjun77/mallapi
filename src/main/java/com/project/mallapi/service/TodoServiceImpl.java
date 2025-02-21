@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
 @Log4j2
@@ -68,7 +67,7 @@ public class TodoServiceImpl implements TodoService {
     public PageResponseDTO<TodoDTO> getList(PageRequestDTO pageRequestDTO) {
 
         // JPA
-        Page<Todo> result = todoRepository.search1(pageRequestDTO);
+        Page<Todo> result = todoRepository.search(pageRequestDTO);
 
         //Todo List => TodoDto List
         List<TodoDTO> dtoList = result
