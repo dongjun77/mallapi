@@ -1,12 +1,18 @@
 package com.project.mallapi.domain;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@ToString
+@ToString(exclude = {"imageList", "writer"})
 @Getter
 @Builder
 @AllArgsConstructor
@@ -35,6 +41,14 @@ public class Todo {
 
     private LocalDate dueDate;
 
+    @ElementCollection
+    @Builder.Default
+    private List<TodoImage> imageList = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_email", nullable = false)
+    private Member writer;
+
     public void changeTitle(String title) {
         this.title = title;
     }
@@ -49,6 +63,25 @@ public class Todo {
 
     public void changeDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
+    }
+
+    // 이미지 추가
+    public void addImage(TodoImage image) {
+        image.setOrd(imageList.size());
+        imageList.add(image);
+    }
+
+    public void addImageString(String fileName) {
+        TodoImage todoImage = TodoImage.builder()
+                .fileName(fileName)
+                .build();
+
+        addImage(todoImage);
+    }
+
+    // 이미지 전체 삭제
+    public void clearImageList() {
+        this.imageList.clear();
     }
 
 }
