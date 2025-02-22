@@ -17,7 +17,7 @@ public interface TodoService {
 
     void remove(Long tno);
 
-    PageResponseDTO<TodoDTO> getList(PageRequestDTO pageRequestDTO);
+//    PageResponseDTO<TodoDTO> getList(PageRequestDTO pageRequestDTO);
 
     default TodoDTO entityToDTO(Todo todo) {
         return TodoDTO.builder()

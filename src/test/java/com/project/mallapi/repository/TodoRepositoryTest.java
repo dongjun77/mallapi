@@ -2,9 +2,13 @@ package com.project.mallapi.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.project.mallapi.domain.Member;
 import com.project.mallapi.domain.Todo;
+import com.project.mallapi.dto.PageRequestDTO;
+import com.project.mallapi.dto.TodoDTO;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,6 +25,8 @@ class TodoRepositoryTest {
 
     @Autowired
     private TodoRepository todoRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     public void test1() {
@@ -32,21 +38,26 @@ class TodoRepositoryTest {
     }
 
     @Test
-    public void testInsert() {
+    public void v1_testInsert() {
 
-        for (int i = 0; i < 100; i++) {
+        Member member = memberRepository.findById("user1@aaa.com")
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        for (int i = 0; i < 10; i++) {
 
             Todo todo = Todo.builder()
                     .title("title"+i)
                     .content("Content..."+i)
                     .dueDate(LocalDate.of(2023,12,30))
+                    .member(member)
                     .build();
+            todo.addImageString(UUID.randomUUID()+"_"+"IMAGE1.jpg");
+            todo.addImageString(UUID.randomUUID()+"_"+"IMAGE2.jpg");
+
             Todo result = todoRepository.save(todo);
 
             log.info(result);
-
         }
-
     }
 
     @Test
@@ -59,6 +70,18 @@ class TodoRepositoryTest {
         Todo todo = result.orElseThrow();
 
         log.info(todo);
+    }
+    @Test
+    public void v1_testReadwith이미지() {
+
+        Long tno = 1L;
+
+        Optional<Todo> result = todoRepository.selectOneWithImageList(tno);
+
+        Todo todo = result.orElseThrow();
+
+        log.info(todo);
+        log.info(todo.getImageList());
     }
 
     @Test
@@ -81,7 +104,7 @@ class TodoRepositoryTest {
     }
 
     @Test
-    public void testPaging() {
+    public void default_testPaging() {
 
         // 페이지 번호는 0부터
         Pageable pageable = PageRequest.of(0, 10, Sort.by("tno").descending());
@@ -94,10 +117,29 @@ class TodoRepositoryTest {
     }
 
     @Test
-    public void testSearch() {
+    public void v1_querydsl_testSearch() {
+        String email = "user1@aaa.com";
 
-//        todoRepository.search();
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .size(10)
+                .page(1)
+                .build();
+        Page<TodoDTO> result = todoRepository.search(email, pageRequestDTO);
 
+        log.info(result.getTotalElements());
+        log.info(result.getContent());
     }
 
+    @Test
+    public void v1_JPQL_testSelectListByMember() {
+
+        String email = "user1@aaa.com";
+
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("tno").descending());
+
+        Page<TodoDTO> result = todoRepository.selectListByMember(email, pageable);
+
+        log.info(result.getTotalElements());
+        log.info(result.getContent());
+    }
 }

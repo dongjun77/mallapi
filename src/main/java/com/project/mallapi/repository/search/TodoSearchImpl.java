@@ -1,8 +1,11 @@
 package com.project.mallapi.repository.search;
 
 import com.project.mallapi.domain.QTodo;
+import com.project.mallapi.domain.QTodoImage;
 import com.project.mallapi.domain.Todo;
 import com.project.mallapi.dto.PageRequestDTO;
+import com.project.mallapi.dto.TodoDTO;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -24,20 +27,33 @@ public class TodoSearchImpl implements TodoSearch {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Todo> search(PageRequestDTO pageRequestDTO) {
+    public Page<TodoDTO> search(String email, PageRequestDTO pageRequestDTO) {
 
         log.info("search.......................");
 
         QTodo todo = QTodo.todo;
+        QTodoImage todoImage = QTodoImage.todoImage;
 
         Pageable pageable = PageRequest.of(
                 pageRequestDTO.getPage() - 1 ,
                 pageRequestDTO.getSize(),
                 Sort.by("tno").descending());
 
-        List<Todo> list = queryFactory
-                .select(todo)
+        List<TodoDTO> list = queryFactory
+                .select(Projections.constructor(
+                        TodoDTO.class,
+                        todo.tno,
+                        todo.title,
+                        todo.content,
+                        todo.member.email,
+                        todo.complete,
+                        todo.dueDate,
+                        todoImage.fileName
+                ))
                 .from(todo)
+                .leftJoin(todo.imageList, todoImage)
+                .on(todoImage.ord.eq(0))
+                .where(todo.member.email.eq(email))
                 .orderBy(todo.tno.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -46,6 +62,7 @@ public class TodoSearchImpl implements TodoSearch {
         long total = Optional.ofNullable(queryFactory
                 .select(todo.count())
                 .from(todo)
+                .where(todo.member.email.eq(email))
                 .fetchOne()).orElse(0L);
 
         return new PageImpl<>(list, pageable, total);

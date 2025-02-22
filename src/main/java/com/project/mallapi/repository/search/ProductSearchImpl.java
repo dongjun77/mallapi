@@ -62,12 +62,6 @@ public class ProductSearchImpl implements ProductSearch {
                 .from(product)
                 .fetchOne()).orElse(0L);
 
-        // ✅ 전체 개수 조회
-        long count = Optional.ofNullable(queryFactory
-                .select(product.count())
-                .from(product)
-                .fetchOne()).orElse(0L);
-
         // ✅ PageResponseDTO 반환 로직 추가
         return PageResponseDTO.<ProductDTO>withAll()
                 .dtoList(productList.stream()

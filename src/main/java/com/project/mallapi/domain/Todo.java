@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@ToString(exclude = {"imageList", "writer"})
+@ToString(exclude = {"imageList", "member"})
 @Getter
 @Builder
 @AllArgsConstructor
@@ -43,11 +43,11 @@ public class Todo {
 
     @ElementCollection
     @Builder.Default
-    private List<TodoImage> imageList = new ArrayList<>();
+    private List<TodoImage> imageList = new     ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "writer_email", nullable = false)
-    private Member writer;
+    @JoinColumn(name = "member_email", nullable = false)
+    private Member member;
 
     public void changeTitle(String title) {
         this.title = title;
