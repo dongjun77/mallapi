@@ -53,7 +53,8 @@ public class TodoSearchImpl implements TodoSearch {
                 .from(todo)
                 .leftJoin(todo.imageList, todoImage)
                 .on(todoImage.ord.eq(0))
-                .where(todo.member.email.eq(email))
+                .where(todo.member.email.eq(email)
+                        .and(todo.complete.eq(false)))
                 .orderBy(todo.tno.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -62,7 +63,8 @@ public class TodoSearchImpl implements TodoSearch {
         long total = Optional.ofNullable(queryFactory
                 .select(todo.count())
                 .from(todo)
-                .where(todo.member.email.eq(email))
+                .where(todo.member.email.eq(email)
+                        .and(todo.complete.eq(false)))
                 .fetchOne()).orElse(0L);
 
         return new PageImpl<>(list, pageable, total);

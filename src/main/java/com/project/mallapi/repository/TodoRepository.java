@@ -20,7 +20,8 @@ public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
     @Query("SELECT new com.project.mallapi.dto.TodoDTO(t.tno, t.title, t.content, t.member.email, t.complete, t.dueDate, ti.fileName) "
             + "FROM Todo t "
             + "LEFT JOIN t.imageList ti ON ti.ord = 0 "
-            + "WHERE t.member.email = :email")
+            + "WHERE t.member.email = :email "
+            + "and t.complete is false")
     Page<TodoDTO> selectListByMember(@Param("email") String email, Pageable pageable);
 
 

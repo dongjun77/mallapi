@@ -34,7 +34,6 @@ class TodoRepositoryTest {
         Assertions.assertNotNull(todoRepository);
 
         log.info(todoRepository.getClass().getName());
-
     }
 
     @Test
@@ -61,7 +60,7 @@ class TodoRepositoryTest {
     }
 
     @Test
-    public void testRead() {
+    public void default_testRead() {
 
         Long tno = 1L;
 
@@ -72,7 +71,7 @@ class TodoRepositoryTest {
         log.info(todo);
     }
     @Test
-    public void v1_testReadwith이미지() {
+    public void v1_testRead단건조회() {
 
         Long tno = 1L;
 
