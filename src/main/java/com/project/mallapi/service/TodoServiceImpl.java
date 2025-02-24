@@ -1,9 +1,11 @@
 package com.project.mallapi.service;
 
+import com.project.mallapi.domain.Member;
 import com.project.mallapi.domain.Todo;
 import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.PageResponseDTO;
 import com.project.mallapi.dto.TodoDTO;
+import com.project.mallapi.repository.MemberRepository;
 import com.project.mallapi.repository.TodoRepository;
 import java.util.List;
 import java.util.Optional;
@@ -19,11 +21,12 @@ import org.springframework.stereotype.Service;
 public class TodoServiceImpl implements TodoService {
 
     private final TodoRepository todoRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public TodoDTO get(Long tno) {
 
-        Optional<Todo> result = todoRepository.findById(tno);
+        Optional<Todo> result = todoRepository.selectOneWithImageList(tno);
 
         Todo todo = result.orElseThrow();
 
@@ -31,9 +34,12 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public Long register(TodoDTO dto) {
+    public Long register(TodoDTO todoDTO) {
 
-        Todo todo = dtoToEntity(dto);
+        Member member = memberRepository.findById(todoDTO.getMemberEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        Todo todo = dtoToEntity(todoDTO, member);
 
         Todo result = todoRepository.save(todo);
 

@@ -45,7 +45,6 @@ public class CartRepositoryTest {
 
         // 사용자의 장바구니에 장바구니 아이템 만들어서 저장
         // 장바구니 자체가 없을 수 도 있음
-
         Optional<Cart> result = cartRepository.getCartOfMember(email);
 
         Cart cart = null;

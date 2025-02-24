@@ -8,14 +8,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class TodoDTO {
 
     private Long tno;
@@ -30,17 +34,10 @@ public class TodoDTO {
 
     private LocalDate dueDate;
 
-    private String imageFile;
+    @Builder.Default
+    private List<MultipartFile> files = new ArrayList<>(); //
 
-    @QueryProjection
-    public TodoDTO(Long tno, String title, String content, String memberEmail, boolean complete,
-                   LocalDate dueDate, String imageFile) {
-        this.tno = tno;
-        this.title = title;
-        this.content = content;
-        this.memberEmail = memberEmail;
-        this.imageFile = imageFile;
-        this.complete = complete;
-        this.dueDate = dueDate;
-    }
+    @Builder.Default
+    private List<String> uploadFileNames = new ArrayList<>(); // 파일의 이름들
+
 }

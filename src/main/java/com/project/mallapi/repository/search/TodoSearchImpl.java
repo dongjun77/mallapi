@@ -5,6 +5,7 @@ import com.project.mallapi.domain.QTodoImage;
 import com.project.mallapi.domain.Todo;
 import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.TodoDTO;
+import com.project.mallapi.dto.TodoListDTO;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -27,7 +28,7 @@ public class TodoSearchImpl implements TodoSearch {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<TodoDTO> search(String email, PageRequestDTO pageRequestDTO) {
+    public Page<TodoListDTO> search(String email, PageRequestDTO pageRequestDTO) {
 
         log.info("search.......................");
 
@@ -39,9 +40,9 @@ public class TodoSearchImpl implements TodoSearch {
                 pageRequestDTO.getSize(),
                 Sort.by("tno").descending());
 
-        List<TodoDTO> list = queryFactory
+        List<TodoListDTO> list = queryFactory
                 .select(Projections.constructor(
-                        TodoDTO.class,
+                        TodoListDTO.class,
                         todo.tno,
                         todo.title,
                         todo.content,

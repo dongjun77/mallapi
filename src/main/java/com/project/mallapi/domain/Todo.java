@@ -43,10 +43,10 @@ public class Todo {
 
     @ElementCollection
     @Builder.Default
-    private List<TodoImage> imageList = new     ArrayList<>();
+    private List<TodoImage> imageList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_email", nullable = false)
+    @JoinColumn(name = "member_email")
     private Member member;
 
     public void changeTitle(String title) {
@@ -63,6 +63,10 @@ public class Todo {
 
     public void changeDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public void addMember(Member member) {
+        this.member = member;
     }
 
     // 이미지 추가

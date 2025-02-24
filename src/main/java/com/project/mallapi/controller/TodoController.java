@@ -4,6 +4,8 @@ import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.PageResponseDTO;
 import com.project.mallapi.dto.TodoDTO;
 import com.project.mallapi.service.TodoService;
+import com.project.mallapi.util.TodoFileUtil;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +18,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/api/todo")
 public class TodoController {
+
+    private final TodoFileUtil todoFileUtil;
 
     private final TodoService todoService;
 
@@ -40,13 +45,23 @@ public class TodoController {
     }
 
     @PostMapping("/")
-    public Map<String, Long> register(@RequestBody TodoDTO dto) {
+    public Map<String, Long> register(TodoDTO todoDTO, Principal principal) {
 
-        log.info("todoDTO: " + dto);
+        String email = principal.getName();
 
-        Long tno = todoService.register(dto);
+        todoDTO.setMemberEmail(email);
 
-        return Map.of("TNO", tno);
+        log.info("todoDTO: " + todoDTO);
+
+        List<MultipartFile> files = todoDTO.getFiles();
+
+        List<String> uploadFileNames = todoFileUtil.saveFiles(files);
+
+        todoDTO.setUploadFileNames(uploadFileNames);
+
+        Long tno = todoService.register(todoDTO);
+
+        return Map.of("result", tno);
     }
 
     @PutMapping("/{tno}")

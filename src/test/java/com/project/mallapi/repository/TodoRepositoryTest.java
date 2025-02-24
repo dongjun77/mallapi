@@ -1,11 +1,10 @@
 package com.project.mallapi.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.project.mallapi.domain.Member;
 import com.project.mallapi.domain.Todo;
 import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.TodoDTO;
+import com.project.mallapi.dto.TodoListDTO;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
@@ -88,18 +87,20 @@ class TodoRepositoryTest {
 
         // 먼저 로딩 하고 엔티티 객체를 변경 /setter
 
-        Long tno = 1L;
+        Long tno = 2L;
 
-        Optional<Todo> result = todoRepository.findById(tno);
+        Optional<Todo> result = todoRepository.selectOneWithImageList(tno);
 
-        Todo todo = result.orElseThrow();
+        Todo todo = result.get();
+
+        log.info(todo);
 
         todo.changeTitle("Up");
         todo.changeContent("up C");
         todo.changeComplete(true);
+        todo.addImageString(UUID.randomUUID()+"_"+"IMAGE1.jpg");
 
-        todoRepository.save(todo);
-
+        log.info(todoRepository.save(todo));
     }
 
     @Test
@@ -123,7 +124,7 @@ class TodoRepositoryTest {
                 .size(10)
                 .page(1)
                 .build();
-        Page<TodoDTO> result = todoRepository.search(email, pageRequestDTO);
+        Page<TodoListDTO> result = todoRepository.search(email, pageRequestDTO);
 
         log.info(result.getTotalElements());
         log.info(result.getContent());
@@ -136,7 +137,7 @@ class TodoRepositoryTest {
 
         Pageable pageable = PageRequest.of(0, 5, Sort.by("tno").descending());
 
-        Page<TodoDTO> result = todoRepository.selectListByMember(email, pageable);
+        Page<TodoListDTO> result = todoRepository.getItemsOfTodoListDTOByEmailComplete(email, pageable);
 
         log.info(result.getTotalElements());
         log.info(result.getContent());
