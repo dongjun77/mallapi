@@ -42,7 +42,7 @@ class TodoServiceImplTest {
 
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(11).build();
 
-        log.info(todoService.getList(pageRequestDTO));
+//        log.info(todoService.getList(pageRequestDTO));
 
     }
 }

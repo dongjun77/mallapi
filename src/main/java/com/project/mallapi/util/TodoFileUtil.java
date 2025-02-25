@@ -21,9 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @Log4j2
-public class CustomFileUtil {
+public class TodoFileUtil {
 
-    @Value("${org.zerock.upload.product.path}")
+    @Value("${org.zerock.upload.todo.path}")
     private String uploadPath;
 
     @PostConstruct //Spring이 빈을 생성한 후 실행되는 메서드

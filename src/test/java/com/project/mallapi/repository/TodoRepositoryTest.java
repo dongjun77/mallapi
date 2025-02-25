@@ -1,10 +1,13 @@
 package com.project.mallapi.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.project.mallapi.domain.Member;
 import com.project.mallapi.domain.Todo;
+import com.project.mallapi.dto.PageRequestDTO;
+import com.project.mallapi.dto.TodoDTO;
+import com.project.mallapi.dto.TodoListDTO;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,6 +24,8 @@ class TodoRepositoryTest {
 
     @Autowired
     private TodoRepository todoRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     public void test1() {
@@ -28,29 +33,33 @@ class TodoRepositoryTest {
         Assertions.assertNotNull(todoRepository);
 
         log.info(todoRepository.getClass().getName());
-
     }
 
     @Test
-    public void testInsert() {
+    public void v1_testInsert() {
 
-        for (int i = 0; i < 100; i++) {
+        Member member = memberRepository.findById("user1@aaa.com")
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        for (int i = 0; i < 10; i++) {
 
             Todo todo = Todo.builder()
                     .title("title"+i)
                     .content("Content..."+i)
                     .dueDate(LocalDate.of(2023,12,30))
+                    .member(member)
                     .build();
+            todo.addImageString(UUID.randomUUID()+"_"+"IMAGE1.jpg");
+            todo.addImageString(UUID.randomUUID()+"_"+"IMAGE2.jpg");
+
             Todo result = todoRepository.save(todo);
 
             log.info(result);
-
         }
-
     }
 
     @Test
-    public void testRead() {
+    public void default_testRead() {
 
         Long tno = 1L;
 
@@ -60,28 +69,51 @@ class TodoRepositoryTest {
 
         log.info(todo);
     }
+    @Test
+    public void v1_testRead단건조회() {
+
+        Long tno = 1L;
+
+        Optional<Todo> result = todoRepository.selectOneWithImageList(tno);
+
+        Todo todo = result.orElseThrow();
+
+        log.info(todo);
+        log.info(todo.getImageList());
+    }
+
+    @Test
+    public void testDelete() {
+
+        Long tno = 11L;
+
+        todoRepository.deleteById(tno);
+
+    }
 
     @Test
     public void testUpdate() {
 
         // 먼저 로딩 하고 엔티티 객체를 변경 /setter
 
-        Long tno = 1L;
+        Long tno = 2L;
 
-        Optional<Todo> result = todoRepository.findById(tno);
+        Optional<Todo> result = todoRepository.selectOneWithImageList(tno);
 
-        Todo todo = result.orElseThrow();
+        Todo todo = result.get();
+
+        log.info(todo);
 
         todo.changeTitle("Up");
         todo.changeContent("up C");
         todo.changeComplete(true);
+        todo.addImageString(UUID.randomUUID()+"_"+"IMAGE1.jpg");
 
-        todoRepository.save(todo);
-
+        log.info(todoRepository.save(todo));
     }
 
     @Test
-    public void testPaging() {
+    public void default_testPaging() {
 
         // 페이지 번호는 0부터
         Pageable pageable = PageRequest.of(0, 10, Sort.by("tno").descending());
@@ -93,11 +125,30 @@ class TodoRepositoryTest {
         log.info(result.getContent());
     }
 
-//    @Test
-//    public void testSearch1() {
-//
-//        todoRepository.search1();
-//
-//    }
+    @Test
+    public void v1_querydsl_testSearch() {
+        String email = "user1@aaa.com";
 
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .size(10)
+                .page(1)
+                .build();
+        Page<TodoListDTO> result = todoRepository.search(email, pageRequestDTO);
+
+        log.info(result.getTotalElements());
+        log.info(result.getContent());
+    }
+
+    @Test
+    public void v1_JPQL_testSelectListByMember() {
+
+        String email = "user1@aaa.com";
+
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("tno").descending());
+
+        Page<TodoListDTO> result = todoRepository.getItemsOfTodoListDTOByEmailComplete(email, pageable);
+
+        log.info(result.getTotalElements());
+        log.info(result.getContent());
+    }
 }
