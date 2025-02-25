@@ -6,6 +6,7 @@ import com.project.mallapi.domain.TodoImage;
 import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.PageResponseDTO;
 import com.project.mallapi.dto.TodoDTO;
+import com.project.mallapi.dto.TodoListDTO;
 import jakarta.transaction.Transactional;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public interface TodoService {
 
     void remove(Long tno);
 
-//    PageResponseDTO<TodoDTO> getList(PageRequestDTO pageRequestDTO);
+    PageResponseDTO<TodoListDTO> getList(PageRequestDTO pageRequestDTO, String email);
 
     default TodoDTO entityToDTO(Todo todo) {
         TodoDTO todoDTO = TodoDTO.builder()

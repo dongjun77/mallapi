@@ -83,6 +83,15 @@ class TodoRepositoryTest {
     }
 
     @Test
+    public void testDelete() {
+
+        Long tno = 11L;
+
+        todoRepository.deleteById(tno);
+
+    }
+
+    @Test
     public void testUpdate() {
 
         // 먼저 로딩 하고 엔티티 객체를 변경 /setter
