@@ -25,6 +25,7 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = "todoImageList")
 @Table(name = "tbl_todo")
 public class Todo {
 
