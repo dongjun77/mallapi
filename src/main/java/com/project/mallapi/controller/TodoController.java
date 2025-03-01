@@ -57,8 +57,6 @@ public class TodoController {
     @GetMapping("/list")
     public PageResponseDTO<TodoListDTO> list(PageRequestDTO pageRequestDTO, Principal principal) {
 
-//        log.info("list........" + pageRequestDTO);
-
         String memberEmail = principal.getName();
 
         return todoService.getList(pageRequestDTO, memberEmail);
@@ -86,15 +84,16 @@ public class TodoController {
         return Map.of("result", tno);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/{tno}")
     public Map<String, String> modify(@PathVariable(name = "tno") Long tno,
                                       TodoDTO todoDTO,
                                       Principal principal){
-        todoDTO.setTno(tno);
-
         String email = principal.getName();
 
-        if (!todoDTO.getMemberEmail().equals(email)) {
+        String todoWriter = todoService.getTodoWriter(tno);
+
+        if(!todoWriter.equals(email)){
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
@@ -109,7 +108,7 @@ public class TodoController {
 
         List<String> uploadedFileNames = todoDTO.getUploadFileNames();
 
-        if (currentUploadFileNames != null && !currentUploadFileNames.isEmpty()) {
+        if (!currentUploadFileNames.isEmpty()) {
             uploadedFileNames.addAll(currentUploadFileNames);
         }
 
@@ -127,12 +126,25 @@ public class TodoController {
         return Map.of("RESULT","SUCCESS");
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("/{tno}")
-    public Map<String, String> remove(@PathVariable Long tno) {
+    public Map<String, String> remove(@PathVariable("tno") Long tno,
+                                      Principal principal) {
 
-        todoService.remove(tno);
+        String email = principal.getName();
+
+        String todoWriter = todoService.getTodoWriter(tno);
+
+        if(!todoWriter.equals(email)){
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+
+        List<String> oldFielNames = todoService.get(tno).getUploadFileNames();
+
+        todoService.remove(tno, email);
+
+        todoFileUtil.deleteFiles(oldFielNames);
 
         return Map.of("RESULT","SUCCESS");
     }
-
 }

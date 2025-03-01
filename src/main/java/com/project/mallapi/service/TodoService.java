@@ -19,7 +19,9 @@ public interface TodoService {
 
     void modify(TodoDTO dto);
 
-    void remove(Long tno);
+    void remove(Long tno,String email);
+
+    String getTodoWriter(Long tno);
 
     PageResponseDTO<TodoListDTO> getList(PageRequestDTO pageRequestDTO, String email);
 

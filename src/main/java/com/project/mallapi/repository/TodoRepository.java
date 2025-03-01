@@ -24,5 +24,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
             + "and t.complete is false")
     Page<TodoListDTO> getItemsOfTodoListDTOByEmailComplete(@Param("email") String email, Pageable pageable);
 
+    @Query("SELECT t.member.email FROM Todo t WHERE t.tno = :tno")
+    String getMemberEmailByTodoId(@Param("tno") Long tno);
 
 }

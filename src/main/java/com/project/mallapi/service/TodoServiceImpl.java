@@ -78,10 +78,18 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public void remove(Long tno) {
+    public void remove(Long tno, String email) {
+
+        Member member = memberRepository.findById(email)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
         todoRepository.deleteById(tno);
 
+    }
+
+    @Override
+    public String getTodoWriter(Long tno) {
+        return todoRepository.getMemberEmailByTodoId(tno);
     }
 
     @Override
