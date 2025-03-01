@@ -70,3 +70,7 @@ tasks.named('test') {
 }
 
 compileJava.dependsOn('clean')
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add("-parameters")
+}

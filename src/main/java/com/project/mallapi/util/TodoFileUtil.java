@@ -45,7 +45,8 @@ public class TodoFileUtil {
     public List<String> saveFiles(List<MultipartFile> files) throws RuntimeException {
 
         if(files == null || files.size() == 0) {
-            return null;
+            log.warn("🚨 saveFiles: 파일이 없음!");
+            return new ArrayList<>();
         }
 
         List<String> uploadNames = new ArrayList<>();
