@@ -3,6 +3,7 @@ package com.project.mallapi.repository;
 import com.project.mallapi.domain.Todo;
 import com.project.mallapi.dto.TodoListDTO;
 import com.project.mallapi.repository.search.TodoSearch;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,13 @@ public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
             + "WHERE t.member.email = :email "
             + "and t.complete is false")
     Page<TodoListDTO> getItemsOfTodoListDTOByEmailComplete(@Param("email") String email, Pageable pageable);
+
+    @Query("SELECT new com.project.mallapi.dto.TodoListDTO(t.tno, t.title, t.content, t.member.email, t.complete, t.dueDate, ti.fileName) "
+            + "FROM Todo t "
+            + "LEFT JOIN t.imageList ti ON ti.ord = 0 "
+            + "WHERE t.member.email = :email "
+            + "and t.complete is false")
+    List<TodoListDTO> findAllTodoListDTOByEmailComplete(@Param("email") String email);
 
     @Query("SELECT t.member.email FROM Todo t WHERE t.tno = :tno")
     String getMemberEmailByTodoId(@Param("tno") Long tno);

@@ -25,6 +25,10 @@ public interface TodoService {
 
     PageResponseDTO<TodoListDTO> getList(PageRequestDTO pageRequestDTO, String email);
 
+    List<TodoListDTO> findAllTodoList(String email);
+
+    List<TodoListDTO> searchAllTodoList(String email);
+
     default TodoDTO entityToDTO(Todo todo) {
         TodoDTO todoDTO = TodoDTO.builder()
                 .tno(todo.getTno())

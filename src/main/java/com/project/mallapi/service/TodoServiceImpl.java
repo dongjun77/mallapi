@@ -107,4 +107,19 @@ public class TodoServiceImpl implements TodoService {
                 .pageRequestDTO(pageRequestDTO)
                 .build();
     }
+
+    @Override
+    public List<TodoListDTO> findAllTodoList(String email) {
+
+        List<TodoListDTO> result = todoRepository.findAllTodoListDTOByEmailComplete(email);
+
+        return result;
+    }
+
+    @Override
+    public List<TodoListDTO> searchAllTodoList(String email) {
+
+        List<TodoListDTO> result = todoRepository.searchAll(email);
+        return result;
+    }
 }

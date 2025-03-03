@@ -70,4 +70,32 @@ public class TodoSearchImpl implements TodoSearch {
 
         return new PageImpl<>(list, pageable, total);
     }
+
+    @Override
+    public List<TodoListDTO> searchAll(String email) {
+
+        QTodo todo = QTodo.todo;
+        QTodoImage todoImage = QTodoImage.todoImage;
+
+        List<TodoListDTO> list = queryFactory
+                .select(Projections.fields(
+                        TodoListDTO.class,
+                        todo.tno,
+                        todo.title,
+                        todo.content,
+                        todo.member.email,
+                        todo.complete,
+                        todo.dueDate,
+                        todoImage.fileName
+                ))
+                .from(todo)
+                .leftJoin(todo.imageList, todoImage)
+                .on(todoImage.ord.eq(0))
+                .where(todo.member.email.eq(email)
+                        .and(todo.complete.eq(false)))
+                .orderBy(todo.tno.desc())
+                .fetch();
+
+        return list;
+    }
 }

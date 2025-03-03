@@ -147,4 +147,20 @@ public class TodoController {
 
         return Map.of("RESULT","SUCCESS");
     }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/findall")
+    public List<TodoListDTO> findAllTodoList(Principal principal) {
+
+        String memberEmail = principal.getName();
+        return todoService.findAllTodoList(memberEmail);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/searchall")
+    public List<TodoListDTO> searchAllTodoList(Principal principal) {
+
+        String memberEmail = principal.getName();
+        return todoService.searchAllTodoList(memberEmail);
+    }
 }

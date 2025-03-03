@@ -38,19 +38,19 @@ class TodoRepositoryTest {
     @Test
     public void v1_testInsert() {
 
-        Member member = memberRepository.findById("user1@aaa.com")
+        Member member = memberRepository.findById("user3@aaa.com")
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10000; i++) {
 
             Todo todo = Todo.builder()
                     .title("title"+i)
                     .content("Content..."+i)
-                    .dueDate(LocalDate.of(2023,12,30))
+                    .dueDate(LocalDate.of(2025,3,1))
                     .member(member)
                     .build();
-            todo.addImageString(UUID.randomUUID()+"_"+"IMAGE1.jpg");
-            todo.addImageString(UUID.randomUUID()+"_"+"IMAGE2.jpg");
+            todo.addImageString(UUID.randomUUID()+"_"+"TEST1.jpg");
+            todo.addImageString(UUID.randomUUID()+"_"+"TEST2.jpg");
 
             Todo result = todoRepository.save(todo);
 
