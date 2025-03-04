@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: mallapi
+
+  datasource:
+    mysql:
+      url: jdbc:mysql://localhost:3306/malldb
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: malldbuser
+      password: malldbuser
+    postgresql:
+      url: jdbc:postgresql://localhost:5432/malldb
+      username: postgres
+      password: postgres
+      driver-class-name: org.postgresql.Driver
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/malldb
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+  servlet:
+    multipart:
+      max-request-size: 30MB
+      max-file-size: 10MB
+
+logging:
+  level:
+    com.zaxxer: info
+    org.springframework.security.web: trace
+
+org:
+  zerock:
+    upload:
+      todo:
+        path: upload/todo_files
+      product:
+        path: product_files
