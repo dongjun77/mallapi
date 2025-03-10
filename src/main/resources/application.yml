@@ -3,19 +3,11 @@ spring:
     name: mallapi
 
   datasource:
-    mysql:
+#    mysql:
       url: jdbc:mysql://localhost:3306/malldb
       driver-class-name: com.mysql.cj.jdbc.Driver
       username: malldbuser
       password: malldbuser
-    postgresql:
-      url: jdbc:postgresql://localhost:5432/malldb
-      username: postgres
-      password: postgres
-      driver-class-name: org.postgresql.Driver
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/malldb
 
   jpa:
     hibernate:
