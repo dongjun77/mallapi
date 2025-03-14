@@ -122,4 +122,5 @@ public class TodoServiceImpl implements TodoService {
         List<TodoListDTO> result = todoRepository.searchAll(email);
         return result;
     }
+
 }

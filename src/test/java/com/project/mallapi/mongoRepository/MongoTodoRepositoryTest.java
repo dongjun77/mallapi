@@ -1,9 +1,8 @@
-package com.project.mallapi.repository;
+package com.project.mallapi.mongoRepository;
 
-import com.project.mallapi.domain.Member;
-import com.project.mallapi.domain.Todo;
-import com.project.mallapi.dto.PageRequestDTO;
-import com.project.mallapi.dto.TodoDTO;
+import static org.junit.jupiter.api.Assertions.*;
+
+import com.project.mallapi.document.Todo;
 import com.project.mallapi.dto.TodoListDTO;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,12 +20,12 @@ import org.springframework.data.domain.Sort;
 
 @SpringBootTest
 @Log4j2
-class TodoRepositoryTest {
+class MongoTodoRepositoryTest {
 
     @Autowired
-    private TodoRepository todoRepository;
-    @Autowired
-    private MemberRepository memberRepository;
+    private MongoTodoRepository todoRepository;
+
+    String id = "67d38d80d27aa655f840646a";
 
     @Test
     public void test1() {
@@ -39,16 +38,13 @@ class TodoRepositoryTest {
     @Test
     public void v1_testInsert() {
 
-        Member member = memberRepository.findById("user3@aaa.com")
-                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
-
-        for (int i = 10034; i < 1000000; i++) {
+        for (int i = 0; i < 990001; i++) {
 
             Todo todo = Todo.builder()
                     .title("title"+i)
                     .content("Content..."+i)
                     .dueDate(LocalDate.of(2025,3,1))
-                    .member(member)
+                    .memberEmail("user3@aaa.com")
                     .build();
             todo.addImageString(UUID.randomUUID()+"_"+"TEST1.jpg");
             todo.addImageString(UUID.randomUUID()+"_"+"TEST2.jpg");
@@ -62,20 +58,19 @@ class TodoRepositoryTest {
     @Test
     public void default_testRead() {
 
-        Long tno = 1L;
 
-        Optional<Todo> result = todoRepository.findById(tno);
+        Optional<Todo> result = todoRepository.findById(id);
 
         Todo todo = result.orElseThrow();
 
         log.info(todo);
     }
+
     @Test
     public void v1_testRead단건조회() {
 
-        Long tno = 1L;
 
-        Optional<Todo> result = todoRepository.selectOneWithImageList(tno);
+        Optional<Todo> result = todoRepository.findById(id);
 
         Todo todo = result.orElseThrow();
 
@@ -86,9 +81,7 @@ class TodoRepositoryTest {
     @Test
     public void testDelete() {
 
-        Long tno = 11L;
-
-        todoRepository.deleteById(tno);
+        todoRepository.deleteById(id);
 
     }
 
@@ -97,9 +90,7 @@ class TodoRepositoryTest {
 
         // 먼저 로딩 하고 엔티티 객체를 변경 /setter
 
-        Long tno = 2L;
-
-        Optional<Todo> result = todoRepository.selectOneWithImageList(tno);
+        Optional<Todo> result = todoRepository.findById(id);
 
         Todo todo = result.get();
 
@@ -108,6 +99,7 @@ class TodoRepositoryTest {
         todo.changeTitle("Up");
         todo.changeContent("up C");
         todo.changeComplete(true);
+
         todo.addImageString(UUID.randomUUID()+"_"+"IMAGE1.jpg");
 
         log.info(todoRepository.save(todo));
@@ -117,7 +109,7 @@ class TodoRepositoryTest {
     public void default_testPaging() {
 
         // 페이지 번호는 0부터
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("tno").descending());
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
 
         Page<Todo> result = todoRepository.findAll(pageable);
 
@@ -129,38 +121,27 @@ class TodoRepositoryTest {
     @Test
     public void default_testAll() {
 
-        List<Todo> result = todoRepository.findAll();
-
+        List<Todo> result = todoRepository.findAllByMemberEmailAndCompleteIsFalse("user3@aaa.com");
         log.info("result size: {}", result.size());
         log.info("result: {}", result);
 
         result.forEach(todo -> log.info("Todo: {}", todo));
-    }
 
-    @Test
-    public void v1_querydsl_testSearch() {
-        String email = "user1@aaa.com";
-
-        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
-                .size(10)
-                .page(1)
-                .build();
-        Page<TodoListDTO> result = todoRepository.search(email, pageRequestDTO);
-
-        log.info(result.getTotalElements());
-        log.info(result.getContent());
     }
 
     @Test
     public void v1_JPQL_testSelectListByMember() {
 
-        String email = "user1@aaa.com";
+        String email = "user3@aaa.com";
 
         Pageable pageable = PageRequest.of(0, 5, Sort.by("tno").descending());
 
-        Page<TodoListDTO> result = todoRepository.getItemsOfTodoListDTOByEmailComplete(email, pageable);
+        Page<Todo> result = todoRepository.findByMemberEmailAndCompleteIsFalse(email, pageable);
 
         log.info(result.getTotalElements());
         log.info(result.getContent());
     }
+
+
+
 }
