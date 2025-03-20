@@ -39,16 +39,19 @@ class TodoRepositoryTest {
     @Test
     public void v1_testInsert() {
 
-        Member member = memberRepository.findById("user3@aaa.com")
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        Member member = memberRepository.findById("user8@aaa.com")
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-        for (int i = 10034; i < 1000000; i++) {
+        for (int i = 1; i <= 10000; i++) {
 
             Todo todo = Todo.builder()
                     .title("title"+i)
                     .content("Content..."+i)
                     .dueDate(LocalDate.of(2025,3,1))
                     .member(member)
+                    .complete(true)
                     .build();
             todo.addImageString(UUID.randomUUID()+"_"+"TEST1.jpg");
             todo.addImageString(UUID.randomUUID()+"_"+"TEST2.jpg");
@@ -57,19 +60,59 @@ class TodoRepositoryTest {
 
             log.info(result);
         }
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info("걸린시간 : {} ms", duration);
     }
 
     @Test
     public void default_testRead() {
 
-        Long tno = 1L;
+        Long tno = 10L;
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
         Optional<Todo> result = todoRepository.findById(tno);
-
         Todo todo = result.orElseThrow();
 
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
         log.info(todo);
+        log.info("걸린시간 : {} ms", duration);
     }
+
+    @Test
+    public void default_testReadComplete() {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        List<Todo> result = todoRepository.findByComplete(true);
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info(result);
+        log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
+    }
+    @Test
+    public void default_testReadMember() {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        List<Todo> result = todoRepository.findByMember("user8@aaa.com");
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info(result);
+        log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
+    }
+
     @Test
     public void v1_testRead단건조회() {
 
@@ -81,6 +124,24 @@ class TodoRepositoryTest {
 
         log.info(todo);
         log.info(todo.getImageList());
+    }
+
+    @Test
+    public void default_testReadPaging() {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+        // 페이지 번호는 0부터
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("tno").descending());
+
+        Page<Todo> result = todoRepository.getAll(pageable);
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info(result.getTotalElements());
+        log.info(result.getContent());
+
+        log.info("걸린시간 : {} ms", duration);
     }
 
     @Test
@@ -128,13 +189,19 @@ class TodoRepositoryTest {
 
     @Test
     public void default_testAll() {
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
+//        List<TodoListDTO> result = todoRepository.findAllTodoListDTOByEmailComplete("user5@aaa.com");
         List<Todo> result = todoRepository.findAll();
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
 
         log.info("result size: {}", result.size());
         log.info("result: {}", result);
+        log.info("걸린시간 : {} ms", duration);
 
-        result.forEach(todo -> log.info("Todo: {}", todo));
+//        result.forEach(todo -> log.info("Todo: {}", todo));
     }
 
     @Test

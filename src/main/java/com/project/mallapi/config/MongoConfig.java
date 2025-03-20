@@ -48,4 +48,11 @@ public class MongoConfig {
         return converter;
     }
 
+//    @Bean
+//    public MongoMappingContext mongoMappingContext() {
+//        MongoMappingContext context = new MongoMappingContext();
+//        context.setAutoIndexCreation(true);  // 인덱스 자동 생성 활성화
+//        return context;
+//    }
+
 }

@@ -1,9 +1,7 @@
 package com.project.mallapi.mongoRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.project.mallapi.document.Member;
 import com.project.mallapi.document.Todo;
-import com.project.mallapi.dto.TodoListDTO;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -23,56 +21,111 @@ import org.springframework.data.domain.Sort;
 class MongoTodoRepositoryTest {
 
     @Autowired
-    private MongoTodoRepository todoRepository;
+    private MongoTodoRepository mongoTodoRepository;
 
-    String id = "67d38d80d27aa655f840646a";
+    @Autowired
+    private MongoMemberRepository mongoMemberRepository;
+
+    String id = "user9@aaa.com";
 
     @Test
     public void test1() {
 
-        Assertions.assertNotNull(todoRepository);
+        Assertions.assertNotNull(mongoTodoRepository);
 
-        log.info(todoRepository.getClass().getName());
+        log.info(mongoTodoRepository.getClass().getName());
     }
 
     @Test
     public void v1_testInsert() {
 
-        for (int i = 0; i < 990001; i++) {
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+        int testNum = 10;
+
+        Member member = mongoMemberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        for (int i = 0; i <= testNum; i++) {
 
             Todo todo = Todo.builder()
                     .title("title"+i)
                     .content("Content..."+i)
-                    .dueDate(LocalDate.of(2025,3,1))
-                    .memberEmail("user3@aaa.com")
+                    .dueDate(LocalDate.of(2025,3,19))
+                    .member(member)
+                    .complete(true)
                     .build();
             todo.addImageString(UUID.randomUUID()+"_"+"TEST1.jpg");
             todo.addImageString(UUID.randomUUID()+"_"+"TEST2.jpg");
 
-            Todo result = todoRepository.save(todo);
+            Todo result = mongoTodoRepository.save(todo);
 
             log.info(result);
         }
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info("유저 {}의 데이터 {}개 삽입 ",member.getNickname(), testNum);
+        log.info("걸린시간 : {} ms", duration);
+
     }
 
     @Test
     public void default_testRead() {
 
+        String id = "67da3f572124016d060eb325";
 
-        Optional<Todo> result = todoRepository.findById(id);
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
+        Optional<Todo> result = mongoTodoRepository.findById(id);
         Todo todo = result.orElseThrow();
 
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
         log.info(todo);
+        log.info(todo.getImageList());
+        log.info("걸린시간 : {} ms", duration);
+    }
+
+    @Test
+    public void default_test_complete() {
+
+        String id = "67da3f572124016d060eb325";
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        List<Todo> result = mongoTodoRepository.findAllByComplete(true);
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info(result);
+        log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
+    }
+
+    @Test
+    public void default_test_member() {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        List<Todo> result = mongoTodoRepository.findAllByMember("user9@aaa.com");
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info(result);
+        log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
     }
 
     @Test
     public void v1_testRead단건조회() {
 
 
-        Optional<Todo> result = todoRepository.findById(id);
+        Optional<Todo> result = mongoTodoRepository.findById(id);
 
-        Todo todo = result.orElseThrow();
+        Todo todo = result.get();
 
         log.info(todo);
         log.info(todo.getImageList());
@@ -81,7 +134,7 @@ class MongoTodoRepositoryTest {
     @Test
     public void testDelete() {
 
-        todoRepository.deleteById(id);
+        mongoTodoRepository.deleteById(id);
 
     }
 
@@ -90,7 +143,7 @@ class MongoTodoRepositoryTest {
 
         // 먼저 로딩 하고 엔티티 객체를 변경 /setter
 
-        Optional<Todo> result = todoRepository.findById(id);
+        Optional<Todo> result = mongoTodoRepository.findById(id);
 
         Todo todo = result.get();
 
@@ -102,31 +155,41 @@ class MongoTodoRepositoryTest {
 
         todo.addImageString(UUID.randomUUID()+"_"+"IMAGE1.jpg");
 
-        log.info(todoRepository.save(todo));
+        log.info(mongoTodoRepository.save(todo));
     }
 
     @Test
     public void default_testPaging() {
 
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
         // 페이지 번호는 0부터
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
 
-        Page<Todo> result = todoRepository.findAll(pageable);
+        Page<Todo> result = mongoTodoRepository.findAll(pageable);
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
 
         log.info(result.getTotalElements());
-
         log.info(result.getContent());
+        log.info("걸린시간 : {} ms", duration);
     }
 
     @Test
     public void default_testAll() {
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
-        List<Todo> result = todoRepository.findAllByMemberEmailAndCompleteIsFalse("user3@aaa.com");
+//        List<Todo> result = todoRepository.findAllByMemberEmailAndCompleteIsFalse("user5@aaa.com");
+        List<Todo> result = mongoTodoRepository.findAll();
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
         log.info("result size: {}", result.size());
         log.info("result: {}", result);
+        log.info("걸린시간 : {} ms", duration);
 
-        result.forEach(todo -> log.info("Todo: {}", todo));
-
+//        result.forEach(todo -> log.info("Todo: {}", todo));
     }
 
     @Test
@@ -136,7 +199,7 @@ class MongoTodoRepositoryTest {
 
         Pageable pageable = PageRequest.of(0, 5, Sort.by("tno").descending());
 
-        Page<Todo> result = todoRepository.findByMemberEmailAndCompleteIsFalse(email, pageable);
+        Page<Todo> result = mongoTodoRepository.findByMemberEmailAndCompleteIsFalse(email, pageable);
 
         log.info(result.getTotalElements());
         log.info(result.getContent());

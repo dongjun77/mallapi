@@ -7,9 +7,15 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: malldbuser
     password: malldbuser
+#    url: jdbc:postgresql://localhost:5432/malldb
+#    driver-class-name: org.postgresql.Driver
+#    username: postgres
+#    password: postgres
 #  data:
 #    mongodb:
 #      uri: mongodb://localhost:27017/malldb
+#  main:
+#    allow-bean-definition-overriding: true
 
   jpa:
     hibernate:
@@ -38,3 +44,5 @@ org:
         path: upload/todo_files
       product:
         path: product_files
+      mongotodo:
+        path: upload/mongotodo_files

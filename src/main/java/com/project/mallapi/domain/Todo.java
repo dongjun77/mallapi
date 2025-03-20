@@ -20,7 +20,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@ToString(exclude = {"imageList", "member"})
+@ToString
+//        (exclude = {"imageList", "member"})
 @Getter
 @Builder
 @AllArgsConstructor

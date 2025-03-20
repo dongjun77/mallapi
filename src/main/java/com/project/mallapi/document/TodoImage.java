@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 @Getter
 @ToString
@@ -14,6 +15,8 @@ import lombok.ToString;
 public class TodoImage {
 
     private String fileName;
+
+    @Indexed
     private int ord;
 
     public void setOrd(int ord) {

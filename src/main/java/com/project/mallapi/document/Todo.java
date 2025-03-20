@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @ToString
@@ -21,15 +23,21 @@ public class Todo {
 
     @Id
     private String id;
+
     private String title;
+
     private String content;
+
     private boolean complete;
+
+    @Indexed
     private LocalDate dueDate;
 
     @Builder.Default
     private List<TodoImage> imageList = new ArrayList<>();
 
-    private String memberEmail;
+    @DBRef
+    private Member member;
 
     public void changeTitle(String title) {
         this.title = title;
@@ -47,8 +55,8 @@ public class Todo {
         this.dueDate = dueDate;
     }
 
-    public void addMember(String memberEmail) {
-        this.memberEmail = memberEmail;
+    public void addMember(Member member) {
+        this.member = member;
     }
 
     // 이미지 추가

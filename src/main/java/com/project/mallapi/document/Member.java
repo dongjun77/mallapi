@@ -16,9 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "member")
 public class Member {
 
-    @Id
-    private String id;
-
+    @Id // indexd, unique 적용됨
     private String email;
 
     private String pw;
