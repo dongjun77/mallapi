@@ -1,15 +1,5 @@
-package com.project.mallapi.domain;
+package com.project.mallapi.document;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,36 +8,35 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
 @ToString
-//        (exclude = {"imageList", "member"})
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tbl_todo")
+@AllArgsConstructor
+@Document(collection = "tbl_todo")
 public class Todo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long tno;
+    private String id;
 
-    @Column(length = 500, nullable = false)
     private String title;
 
     private String content;
 
     private boolean complete;
 
+    @Indexed
     private LocalDate dueDate;
 
-    @ElementCollection
     @Builder.Default
     private List<TodoImage> imageList = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_email")
+    @DBRef
     private Member member;
 
     public void changeTitle(String title) {
@@ -90,3 +79,4 @@ public class Todo {
     }
 
 }
+

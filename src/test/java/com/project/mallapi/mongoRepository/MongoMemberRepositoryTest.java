@@ -1,9 +1,7 @@
-package com.project.mallapi.repository;
+package com.project.mallapi.mongoRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import com.project.mallapi.domain.Member;
-import com.project.mallapi.domain.MemberRole;
+import com.project.mallapi.document.Member;
+import com.project.mallapi.document.MemberRole;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +10,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootTest
 @Log4j2
-class MemberRepositoryTest {
+class MongoMemberRepositoryTest {
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MongoMemberRepository memberRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -47,10 +45,10 @@ class MemberRepositoryTest {
     public void testRead() {
         String email = "user9@aaa.com";
 
-        Member member = memberRepository.getWithRoles(email);
+        Member member = memberRepository.findByEmailWithRoles(email);
 
         log.info("---------------------");
-        log.info(member);
+        log.info(member.getNickname());
         log.info(member.getMemberRoleList());
     }
 

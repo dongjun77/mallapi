@@ -32,7 +32,16 @@ public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
             + "and t.complete is false")
     List<TodoListDTO> findAllTodoListDTOByEmailComplete(@Param("email") String email);
 
+    @EntityGraph(attributePaths = {"member","imageList"})
+    @Query("select t from Todo t")
+    Page<Todo> getAll(Pageable pageable);
+
     @Query("SELECT t.member.email FROM Todo t WHERE t.tno = :tno")
     String getMemberEmailByTodoId(@Param("tno") Long tno);
 
+    List<Todo> findByComplete(boolean b);
+
+    @EntityGraph(attributePaths = {"member","imageList"})
+    @Query("select t from Todo t where t.member.email = :email")
+    List<Todo> findByMember(@Param("email") String email);
 }
