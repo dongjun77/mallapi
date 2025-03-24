@@ -2,27 +2,28 @@ package com.project.mallapi.service;
 
 import com.project.mallapi.document.Todo;
 import com.project.mallapi.dto.MongoTodoListDTO;
+import com.project.mallapi.dto.PageRequestDTO;
+import com.project.mallapi.dto.PageResponseDTO;
 import jakarta.transaction.Transactional;
 import java.util.List;
 
 @Transactional
 public interface MongoTodoService {
 
-    List<Todo> findAllMongoTodoList(String email);
+    List<MongoTodoListDTO> findAllMongoTodoList(String email);
 
-//    default MongoTodoListDTO entityToMongoTodoListDTO(Todo todo){
-//        MongoTodoListDTO mongoTodoListDTO = MongoTodoListDTO.builder()
-//                .id(todo.getId())
-//                .title(todo.getTitle())
-//                .content(todo.getContent())
-//                .member(todo.getMemberEmail())
-//                .complete(todo.isComplete())
-//                .dueDate(todo.getDueDate())
-//                .imageFile(  // ✅ 이미지가 있는 경우 첫 번째 파일명을 설정
-//                        todo.getImageList().isEmpty() ? null : todo.getImageList().get(0).getFileName()
-//                )
-//                .build();
-//        return mongoTodoListDTO;
-//    }
+    PageResponseDTO<MongoTodoListDTO> pageMongoTodoList(String email, PageRequestDTO pageRequestDTO);
 
+    // 엔터티 -> DTO 변환 메서드 추가
+    default MongoTodoListDTO entityToMongoTodoListDTO(Todo todo) {
+        return MongoTodoListDTO.builder()
+                .id(todo.getId())
+                .title(todo.getTitle())
+                .content(todo.getContent())
+                .memberEmail(todo.getMemberEmail()) // Member 객체에서 Email 가져오기
+                .complete(todo.isComplete())
+                .dueDate(todo.getDueDate())
+                .imageFile(todo.getImageList().get(0).getFileName()) // 이미지 파일 경로 또는 URL
+                .build();
+    }
 }

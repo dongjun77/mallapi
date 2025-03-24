@@ -14,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
 
-    @EntityGraph(attributePaths = "imageList")
+    @EntityGraph(attributePaths = {"member","imageList"})
     @Query("select t from Todo t where t.tno = :tno")
     Optional<Todo> selectOneWithImageList(@Param("tno") Long tno);
 
@@ -32,16 +32,26 @@ public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
             + "and t.complete is false")
     List<TodoListDTO> findAllTodoListDTOByEmailComplete(@Param("email") String email);
 
-    @EntityGraph(attributePaths = {"member","imageList"})
-    @Query("select t from Todo t")
-    Page<Todo> getAll(Pageable pageable);
-
     @Query("SELECT t.member.email FROM Todo t WHERE t.tno = :tno")
     String getMemberEmailByTodoId(@Param("tno") Long tno);
 
-    List<Todo> findByComplete(boolean b);
+    @EntityGraph(attributePaths = {"member","imageList"})
+    @Query("select t from Todo t")
+    List<Todo> findAll();
+
+    @EntityGraph(attributePaths = {"member","imageList"})
+    @Query("select t from Todo t where t.tno = :tno")
+    Optional<Todo> findById(@Param("tno") Long tno);
+
+    @EntityGraph(attributePaths = {"member","imageList"})
+    @Query("select t from Todo t where t.complete = :b")
+    List<Todo> findByComplete(@Param("b") boolean b);
 
     @EntityGraph(attributePaths = {"member","imageList"})
     @Query("select t from Todo t where t.member.email = :email")
     List<Todo> findByMember(@Param("email") String email);
+
+    @EntityGraph(attributePaths = {"member","imageList"})
+    @Query("select t from Todo t")
+    Page<Todo> getAll(Pageable pageable);
 }

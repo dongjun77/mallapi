@@ -3,7 +3,6 @@ package com.project.mallapi.repository;
 import com.project.mallapi.domain.Member;
 import com.project.mallapi.domain.Todo;
 import com.project.mallapi.dto.PageRequestDTO;
-import com.project.mallapi.dto.TodoDTO;
 import com.project.mallapi.dto.TodoListDTO;
 import java.time.LocalDate;
 import java.util.List;
@@ -37,11 +36,11 @@ class TodoRepositoryTest {
     }
 
     @Test
-    public void v1_testInsert() {
+    public void dbtest_testInsert() {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
-        Member member = memberRepository.findById("user8@aaa.com")
+        Member member = memberRepository.findById("user4@aaa.com")
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
         for (int i = 1; i <= 10000; i++) {
@@ -51,7 +50,7 @@ class TodoRepositoryTest {
                     .content("Content..."+i)
                     .dueDate(LocalDate.of(2025,3,1))
                     .member(member)
-                    .complete(true)
+                    .complete(false)
                     .build();
             todo.addImageString(UUID.randomUUID()+"_"+"TEST1.jpg");
             todo.addImageString(UUID.randomUUID()+"_"+"TEST2.jpg");
@@ -68,9 +67,32 @@ class TodoRepositoryTest {
     }
 
     @Test
-    public void default_testRead() {
+    public void dbtest_update() {
 
-        Long tno = 10L;
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        // 먼저 로딩 하고 엔티티 객체를 변경 /setter
+        Long tno = 2L;
+
+        Optional<Todo> result = todoRepository.selectOneWithImageList(tno);
+
+        Todo todo = result.get();
+
+        todo.changeComplete(false);
+
+        log.info(todoRepository.save(todo));
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info(todo);
+        log.info("걸린시간 : {} ms", duration);
+    }
+
+    @Test
+    public void dbtest_testRead() {
+
+        Long tno = 2L;
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
@@ -85,7 +107,22 @@ class TodoRepositoryTest {
     }
 
     @Test
-    public void default_testReadComplete() {
+    public void dbtest_testfindAll() {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        List<Todo> result = todoRepository.findAll();
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info(result);
+        log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
+    }
+
+    @Test
+    public void dbtest_testReadComplete() {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
@@ -98,18 +135,37 @@ class TodoRepositoryTest {
         log.info(result.size());
         log.info("걸린시간 : {} ms", duration);
     }
+
     @Test
-    public void default_testReadMember() {
+    public void dbtest_testReadMember() {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
-        List<Todo> result = todoRepository.findByMember("user8@aaa.com");
+        List<Todo> result = todoRepository.findByMember("user4@aaa.com");
 
         long endTime = System.currentTimeMillis(); // 종료 시간 기록
         long duration = endTime - startTime; // 실행 시간 계산
 
         log.info(result);
         log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
+    }
+
+    @Test
+    public void dbtest_testReadPaging() {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+        // 페이지 번호는 0부터
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("tno").descending());
+
+        Page<Todo> result = todoRepository.getAll(pageable);
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info(result.getSize());
+        log.info(result.getContent());
+
         log.info("걸린시간 : {} ms", duration);
     }
 
@@ -126,23 +182,6 @@ class TodoRepositoryTest {
         log.info(todo.getImageList());
     }
 
-    @Test
-    public void default_testReadPaging() {
-
-        long startTime = System.currentTimeMillis(); // 시작 시간 기록
-        // 페이지 번호는 0부터
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("tno").descending());
-
-        Page<Todo> result = todoRepository.getAll(pageable);
-
-        long endTime = System.currentTimeMillis(); // 종료 시간 기록
-        long duration = endTime - startTime; // 실행 시간 계산
-
-        log.info(result.getTotalElements());
-        log.info(result.getContent());
-
-        log.info("걸린시간 : {} ms", duration);
-    }
 
     @Test
     public void testDelete() {
@@ -221,9 +260,9 @@ class TodoRepositoryTest {
     @Test
     public void v1_JPQL_testSelectListByMember() {
 
-        String email = "user1@aaa.com";
+        String email = "user4@aaa.com";
 
-        Pageable pageable = PageRequest.of(0, 5, Sort.by("tno").descending());
+        Pageable pageable = PageRequest.of(0, 10000, Sort.by("tno").descending());
 
         Page<TodoListDTO> result = todoRepository.getItemsOfTodoListDTOByEmailComplete(email, pageable);
 

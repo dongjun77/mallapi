@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -95,7 +97,13 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public PageResponseDTO<TodoListDTO> getList(PageRequestDTO pageRequestDTO, String email) {
 
-        Page<TodoListDTO> result = todoRepository.search(email, pageRequestDTO);
+//        Page<TodoListDTO> result = todoRepository.search(email, pageRequestDTO);
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage()-1,
+                pageRequestDTO.getSize(),
+                Sort.by("tno").descending());
+
+        Page<TodoListDTO> result = todoRepository.getItemsOfTodoListDTOByEmailComplete(email, pageable);
 
         List<TodoListDTO> dtoList = result.getContent();
 

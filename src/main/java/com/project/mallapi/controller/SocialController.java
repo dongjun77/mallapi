@@ -41,7 +41,7 @@ public class SocialController {
     @PutMapping("/api/member/modify")
     public Map<String, String> modify (@RequestBody MemberModifyDTO memberModifyDTO) {
 
-        log.info("member modify --------------------"+memberModifyDTO);
+        log.info("memberEmail modify --------------------"+memberModifyDTO);
 
         memberService.modifyMember(memberModifyDTO);
 

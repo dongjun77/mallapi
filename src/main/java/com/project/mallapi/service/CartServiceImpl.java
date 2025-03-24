@@ -77,7 +77,7 @@ public class CartServiceImpl implements CartService {
 
         if (result.isEmpty()) {
 
-            log.info("Cart of the member is not exist!!");
+            log.info("Cart of the memberEmail is not exist!!");
 
             Member member = Member.builder().email(email).build();
             Cart tempCart = Cart.builder().owner(member).build();

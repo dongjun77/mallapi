@@ -60,7 +60,6 @@ public class TodoController {
         String memberEmail = principal.getName();
 
         return todoService.getList(pageRequestDTO, memberEmail);
-//        return null;
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")

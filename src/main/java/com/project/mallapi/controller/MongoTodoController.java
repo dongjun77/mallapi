@@ -2,6 +2,8 @@ package com.project.mallapi.controller;
 
 import com.project.mallapi.document.Todo;
 import com.project.mallapi.dto.MongoTodoListDTO;
+import com.project.mallapi.dto.PageRequestDTO;
+import com.project.mallapi.dto.PageResponseDTO;
 import com.project.mallapi.dto.TodoListDTO;
 import com.project.mallapi.service.MongoTodoService;
 import com.project.mallapi.util.MongoTodoFileUtil;
@@ -36,10 +38,21 @@ public class MongoTodoController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/findall")
-    public List<Todo> findAllMongoTodoList(Principal principal) {
+    public List<MongoTodoListDTO> findAllMongoTodoList(Principal principal) {
 
         String memberEmail = principal.getName();
         return mongoTodoService.findAllMongoTodoList(memberEmail);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/list")
+    public PageResponseDTO<MongoTodoListDTO> list(PageRequestDTO pageRequestDTO, Principal principal) {
+
+        String memberEmail = principal.getName();
+
+        log.info(pageRequestDTO);
+
+        return mongoTodoService.pageMongoTodoList(memberEmail, pageRequestDTO);
     }
 
 }
