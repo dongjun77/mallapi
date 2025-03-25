@@ -3,7 +3,9 @@ package com.project.mallapi.service;
 import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.PageResponseDTO;
 import com.project.mallapi.dto.ProductDTO;
+import com.project.mallapi.dto.ProductListDTO;
 import jakarta.transaction.Transactional;
+import java.util.List;
 
 @Transactional
 public interface ProductService {
@@ -18,4 +20,5 @@ public interface ProductService {
 
     void remove(Long pno);
 
+    List<ProductListDTO> getRecent();
 }

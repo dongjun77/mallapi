@@ -3,6 +3,8 @@ package com.project.mallapi.controller;
 import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.PageResponseDTO;
 import com.project.mallapi.dto.ProductDTO;
+import com.project.mallapi.dto.ProductListDTO;
+import com.project.mallapi.dto.TodoListDTO;
 import com.project.mallapi.service.ProductService;
 import com.project.mallapi.util.CustomFileUtil;
 import java.util.List;
@@ -68,6 +70,11 @@ public class ProductController {
         return productService.getList(pageRequestDTO);
     }
 
+    @GetMapping("/recent")
+    public List<ProductListDTO> recent() {
+
+        return productService.getRecent();
+    }
 
     @PostMapping("/")
     public Map<String, Long> register(ProductDTO productDTO) {

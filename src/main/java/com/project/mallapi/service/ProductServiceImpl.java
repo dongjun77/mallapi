@@ -5,6 +5,7 @@ import com.project.mallapi.domain.ProductImage;
 import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.PageResponseDTO;
 import com.project.mallapi.dto.ProductDTO;
+import com.project.mallapi.dto.ProductListDTO;
 import com.project.mallapi.repository.ProductRepository;
 import com.project.mallapi.util.CustomFileUtil;
 import java.util.List;
@@ -127,6 +128,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void remove(Long pno) {
         productRepository.deleteById(pno);
+    }
+
+    @Override
+    public List<ProductListDTO> getRecent() {
+
+        List<ProductListDTO> result = productRepository.getRecent();
+
+        return result;
     }
 
     private Product dtoToEntity(ProductDTO productDTO) {

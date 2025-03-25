@@ -43,6 +43,9 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         if(path.startsWith("/api/todo/deadline")){
             return true;
         }
+        if(path.startsWith("/api/products/recent")){
+            return true;
+        }
 
         // false == check
         return false;
