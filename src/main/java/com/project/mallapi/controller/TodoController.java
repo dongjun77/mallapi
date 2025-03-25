@@ -62,6 +62,16 @@ public class TodoController {
         return todoService.getList(pageRequestDTO, memberEmail);
     }
 
+    @GetMapping("/recent")
+    public List<TodoListDTO> recent() {
+        return todoService.getRecent();
+    }
+
+    @GetMapping("/deadline")
+    public List<TodoListDTO> deadline() {
+        return todoService.getDeadline();
+    }
+
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/")
     public Map<String, Long> register(TodoDTO todoDTO, Principal principal) {
@@ -99,6 +109,7 @@ public class TodoController {
 
         return Map.of("RESULT","SUCCESS");
     }
+
     @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/{tno}")
     public Map<String, String> modify(@PathVariable(name = "tno") Long tno,

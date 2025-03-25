@@ -43,6 +43,6 @@ org:
       todo:
         path: upload/todo_files
       product:
-        path: product_files
+        path: upload/product_files
       mongotodo:
         path: upload/mongotodo_files

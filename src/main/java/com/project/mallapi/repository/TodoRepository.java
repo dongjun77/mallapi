@@ -29,11 +29,27 @@ public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
             + "FROM Todo t "
             + "LEFT JOIN t.imageList ti ON ti.ord = 0 "
             + "WHERE t.member.email = :email "
-            + "and t.complete is false")
+            + "and t.complete is false ")
     List<TodoListDTO> findAllTodoListDTOByEmailComplete(@Param("email") String email);
 
     @Query("SELECT t.member.email FROM Todo t WHERE t.tno = :tno")
     String getMemberEmailByTodoId(@Param("tno") Long tno);
+
+    @Query("SELECT new com.project.mallapi.dto.TodoListDTO(t.tno, t.title, t.content, t.member.email, t.complete, t.dueDate, ti.fileName) "
+            + "FROM Todo t "
+            + "LEFT JOIN t.imageList ti ON ti.ord = 0 "
+            + "WHERE t.complete is false "
+            + "ORDER BY t.tno DESC "
+            + "LIMIT 3")
+    List<TodoListDTO> getRecentTodoList();
+
+    @Query("SELECT new com.project.mallapi.dto.TodoListDTO(t.tno, t.title, t.content, t.member.email, t.complete, t.dueDate, ti.fileName) "
+            + "FROM Todo t "
+            + "LEFT JOIN t.imageList ti ON ti.ord = 0 "
+            + "WHERE t.complete is false "
+            + "ORDER BY t.dueDate DESC, t.tno DESC "
+            + "LIMIT 3")
+    List<TodoListDTO> getDeadlineTodoList();
 
     @EntityGraph(attributePaths = {"member","imageList"})
     @Query("select t from Todo t")
@@ -54,4 +70,5 @@ public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
     @EntityGraph(attributePaths = {"member","imageList"})
     @Query("select t from Todo t")
     Page<Todo> getAll(Pageable pageable);
+
 }

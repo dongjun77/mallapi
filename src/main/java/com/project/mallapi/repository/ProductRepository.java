@@ -1,7 +1,10 @@
 package com.project.mallapi.repository;
 
 import com.project.mallapi.domain.Product;
+import com.project.mallapi.dto.ProductDTO;
+import com.project.mallapi.dto.ProductListDTO;
 import com.project.mallapi.repository.search.ProductSearch;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,4 +26,12 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
     @Query("select p, pi from Product p left join p.imageList pi where pi.ord = 0 and p.delFlag = false ")
     Page<Object[]> selectList(Pageable pageable);
+
+    @Query("SELECT new com.project.mallapi.dto.ProductListDTO(p.pno, p.pname, p.price, p.pdesc, pi.fileName) "
+            + "FROM Product p "
+            + "LEFT JOIN p.imageList pi ON pi.ord = 0 "
+            + "WHERE p.delFlag is false "
+            + "ORDER BY p.pno DESC "
+            + "LIMIT 3")
+    List<ProductListDTO> getRecent();
 }
