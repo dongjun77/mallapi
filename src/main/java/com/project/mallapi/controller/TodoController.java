@@ -84,6 +84,22 @@ public class TodoController {
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
+    @PutMapping("/{tno}/complete")
+    public Map<String, String> todoComplete(@PathVariable(name = "tno") Long tno,
+                                      Principal principal){
+        String email = principal.getName();
+
+        String todoWriter = todoService.getTodoWriter(tno);
+
+        if(!todoWriter.equals(email)){
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+
+        todoService.todoComplete(tno);
+
+        return Map.of("RESULT","SUCCESS");
+    }
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/{tno}")
     public Map<String, String> modify(@PathVariable(name = "tno") Long tno,
                                       TodoDTO todoDTO,

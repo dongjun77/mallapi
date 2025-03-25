@@ -19,6 +19,8 @@ public interface TodoService {
 
     void modify(TodoDTO dto);
 
+    void todoComplete(Long tno);
+
     void remove(Long tno,String email);
 
     String getTodoWriter(Long tno);

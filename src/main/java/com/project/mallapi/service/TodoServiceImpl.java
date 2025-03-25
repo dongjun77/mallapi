@@ -50,6 +50,7 @@ public class TodoServiceImpl implements TodoService {
         return result.getTno();
     }
 
+
     @Override
     public void modify(TodoDTO todoDTO) {
 
@@ -76,6 +77,15 @@ public class TodoServiceImpl implements TodoService {
             });
         }
 
+        todoRepository.save(todo);
+    }
+
+    @Override
+    public void todoComplete(Long tno) {
+        Optional<Todo> result = todoRepository.findById(tno);
+        Todo todo = result.orElseThrow();
+
+        todo.changeComplete(true);
         todoRepository.save(todo);
     }
 
