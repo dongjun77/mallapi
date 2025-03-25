@@ -27,6 +27,10 @@ public interface TodoService {
 
     PageResponseDTO<TodoListDTO> getList(PageRequestDTO pageRequestDTO, String email);
 
+    List<TodoListDTO> getRecent();
+
+    List<TodoListDTO> getDeadline();
+
     List<TodoListDTO> findAllTodoList(String email);
 
     List<TodoListDTO> searchAllTodoList(String email);

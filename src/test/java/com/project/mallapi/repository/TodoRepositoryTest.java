@@ -40,7 +40,7 @@ class TodoRepositoryTest {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
-        Member member = memberRepository.findById("user4@aaa.com")
+        Member member = memberRepository.findById("user1@aaa.com")
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
         for (int i = 1; i <= 10000; i++) {

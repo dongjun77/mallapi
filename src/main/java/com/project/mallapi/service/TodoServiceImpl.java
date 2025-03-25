@@ -127,6 +127,22 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
+    public List<TodoListDTO> getRecent() {
+
+        List<TodoListDTO> result = todoRepository.getRecentTodoList();
+
+        return result;
+    }
+
+    @Override
+    public List<TodoListDTO> getDeadline() {
+
+        List<TodoListDTO> result = todoRepository.getDeadlineTodoList();
+
+        return result;
+    }
+
+    @Override
     public List<TodoListDTO> findAllTodoList(String email) {
 
         List<TodoListDTO> result = todoRepository.findAllTodoListDTOByEmailComplete(email);
