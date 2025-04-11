@@ -50,8 +50,6 @@ public class MongoTodoController {
 
         String memberEmail = principal.getName();
 
-        log.info(pageRequestDTO);
-
         return mongoTodoService.pageMongoTodoList(memberEmail, pageRequestDTO);
     }
 

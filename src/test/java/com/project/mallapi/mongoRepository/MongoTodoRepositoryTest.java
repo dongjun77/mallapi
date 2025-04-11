@@ -1,6 +1,12 @@
 package com.project.mallapi.mongoRepository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.project.mallapi.document.Todo;
+import com.project.mallapi.dto.MongoTodoListDTO;
+import com.project.mallapi.dto.TodoListDTO;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -22,8 +28,7 @@ class MongoTodoRepositoryTest {
     @Autowired
     private MongoTodoRepository mongoTodoRepository;
 
-
-    String id = "user4@aaa.com";
+    String id = "user1@aaa.com";
 
     @Test
     public void test1() {
@@ -37,15 +42,14 @@ class MongoTodoRepositoryTest {
     public void db비교_testInsert() {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
-        int testNum = 10000;
-
+        int testNum = 9999;
 
         for (int i = 1; i <= testNum; i++) {
 
             Todo todo = Todo.builder()
                     .title("title"+i)
                     .content("Content..."+i)
-                    .dueDate(LocalDate.of(2025,3,22))
+                    .dueDate(LocalDate.of(2025,4,1))
                     .memberEmail(id)
                     .complete(false)
                     .build();
@@ -56,12 +60,58 @@ class MongoTodoRepositoryTest {
 
             log.info(result);
         }
+
         long endTime = System.currentTimeMillis(); // 종료 시간 기록
         long duration = endTime - startTime; // 실행 시간 계산
 
         log.info("유저 {}의 데이터 {}개 삽입 ",id, testNum);
         log.info("걸린시간 : {} ms", duration);
 
+    }
+
+    @Test
+    public void db비교_page_TodoListDTO_memberComplete() throws JsonProcessingException {
+
+        Pageable pageable = PageRequest.of(999, 10, Sort.by("dueDate").descending());
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        Page<MongoTodoListDTO> result = mongoTodoRepository.findTodoListDTOByMemberEmail("user1@aaa.com",pageable);
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String json = objectMapper.writeValueAsString(result);
+        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+
+        log.info(result.getContent());
+        log.info(result.getTotalElements());
+        log.info(result.getSize());
+        log.info("걸린시간 : {} ms", duration);
+        log.info("전송 데이터 크기: " + bytes.length + " bytes");
+
+    }
+    @Test
+    public void db비교_TodoListDTO_memberComplete() throws JsonProcessingException {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        List<MongoTodoListDTO> result = mongoTodoRepository.findTodoListDTOByMemberEmail("user1@aaa.com");
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String json = objectMapper.writeValueAsString(result);
+        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+
+        log.info(result);
+        log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
+        log.info("전송 데이터 크기: " + bytes.length + " bytes");
     }
 
     @Test
@@ -103,26 +153,48 @@ class MongoTodoRepositoryTest {
     }
 
     @Test
-    public void db비교_test_complete() {
+    public void db비교_testDelete() {
+
+        String id = "67ebe53a8a95bd5c69fdd385";
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
-        List<Todo> result = mongoTodoRepository.findAllByComplete(true);
+        mongoTodoRepository.deleteById(id);
 
         long endTime = System.currentTimeMillis(); // 종료 시간 기록
         long duration = endTime - startTime; // 실행 시간 계산
 
-        log.info(result);
-        log.info(result.size());
         log.info("걸린시간 : {} ms", duration);
     }
 
     @Test
-    public void db비교_test_All() {
+    public void db비교_test_All() throws JsonProcessingException {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
         List<Todo> result = mongoTodoRepository.findAll();
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String json = objectMapper.writeValueAsString(result);
+        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+
+
+        log.info(result);
+        log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
+        log.info("전송 데이터 크기: " + bytes.length + " bytes");
+    }
+
+    @Test
+    public void db비교_test_complete() {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        List<Todo> result = mongoTodoRepository.findAllByComplete(false);
 
         long endTime = System.currentTimeMillis(); // 종료 시간 기록
         long duration = endTime - startTime; // 실행 시간 계산
@@ -137,7 +209,7 @@ class MongoTodoRepositoryTest {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
-        List<Todo> result = mongoTodoRepository.findAllByMemberEmail("user5@aaa.com");
+        List<Todo> result = mongoTodoRepository.findAllByMemberEmail("user1@aaa.com");
 
         long endTime = System.currentTimeMillis(); // 종료 시간 기록
         long duration = endTime - startTime; // 실행 시간 계산
@@ -152,8 +224,8 @@ class MongoTodoRepositoryTest {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
         // 페이지 번호는 0부터
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
-        Page<Todo> result = mongoTodoRepository.findAllByMemberEmailAndCompleteIsFalse(id, pageable);
+        Pageable pageable = PageRequest.of(0, 10000, Sort.by("id").descending());
+        Page<Todo> result = mongoTodoRepository.findAll(pageable);
 
         long endTime = System.currentTimeMillis(); // 종료 시간 기록
         long duration = endTime - startTime; // 실행 시간 계산

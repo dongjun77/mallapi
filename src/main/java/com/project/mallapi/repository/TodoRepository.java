@@ -18,17 +18,29 @@ public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
     @Query("select t from Todo t where t.tno = :tno")
     Optional<Todo> selectOneWithImageList(@Param("tno") Long tno);
 
-    @Query("SELECT new com.project.mallapi.dto.TodoListDTO(t.tno, t.title, t.content, t.member.email, t.complete, t.dueDate, ti.fileName) "
+    @Query("SELECT new com.project.mallapi.dto.TodoListDTO(t.tno, t.title, t.content, m.email, t.complete, t.dueDate, ti.fileName) "
             + "FROM Todo t "
             + "LEFT JOIN t.imageList ti ON ti.ord = 0 "
-            + "WHERE t.member.email = :email "
+            + "LEFT JOIN t.member m "
+            + "WHERE m.email = :email "
             + "and t.complete is false")
     Page<TodoListDTO> getItemsOfTodoListDTOByEmailComplete(@Param("email") String email, Pageable pageable);
 
-    @Query("SELECT new com.project.mallapi.dto.TodoListDTO(t.tno, t.title, t.content, t.member.email, t.complete, t.dueDate, ti.fileName) "
+    @Query("SELECT new com.project.mallapi.dto.TodoListDTO("
+            + "t.tno, t.title, t.content, m.email, t.complete, t.dueDate, "
+            + "(SELECT ti.fileName FROM Todo t2 JOIN t2.imageList ti WHERE t2 = t AND ti.ord = 0)"
+            + ") "
+            + "FROM Todo t "
+            + "LEFT JOIN t.member m "
+            + "WHERE m.email = :email "
+            + "AND t.complete = false")
+    Page<TodoListDTO> getItemsWithSubquery(@Param("email") String email, Pageable pageable);
+
+    @Query("SELECT new com.project.mallapi.dto.TodoListDTO(t.tno, t.title, t.content, m.email, t.complete, t.dueDate, ti.fileName) "
             + "FROM Todo t "
             + "LEFT JOIN t.imageList ti ON ti.ord = 0 "
-            + "WHERE t.member.email = :email "
+            + "LEFT JOIN t.member m "
+            + "WHERE m.email = :email "
             + "and t.complete is false ")
     List<TodoListDTO> findAllTodoListDTOByEmailComplete(@Param("email") String email);
 
@@ -51,9 +63,9 @@ public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
             + "LIMIT 3")
     List<TodoListDTO> getDeadlineTodoList();
 
-    @EntityGraph(attributePaths = {"member","imageList"})
-    @Query("select t from Todo t")
-    List<Todo> findAll();
+//    @EntityGraph(attributePaths = {"member","imageList"})
+//    @Query("select t from Todo t")
+//    List<Todo> findAll();
 
     @EntityGraph(attributePaths = {"member","imageList"})
     @Query("select t from Todo t where t.tno = :tno")
@@ -64,11 +76,73 @@ public interface TodoRepository extends JpaRepository<Todo, Long>, TodoSearch {
     List<Todo> findByComplete(@Param("b") boolean b);
 
     @EntityGraph(attributePaths = {"member","imageList"})
-    @Query("select t from Todo t where t.member.email = :email")
-    List<Todo> findByMember(@Param("email") String email);
-
-    @EntityGraph(attributePaths = {"member","imageList"})
     @Query("select t from Todo t")
     Page<Todo> getAll(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"imageList", "member"})
+    @Query("select t from Todo t")
+    List<Todo> findAll();
+
+    @EntityGraph(attributePaths = {"member","imageList"})
+    @Query("select t from Todo t where t.member.email = :email")
+    List<Todo> findAllByMemberEmail(@Param("email") String email);
+
+    @Query("SELECT new com.project.mallapi.dto.TodoListDTO(t.tno, t.title, t.content, m.email, t.complete, t.dueDate, ti.fileName) "
+            + "FROM Todo t "
+            + "LEFT JOIN t.imageList ti ON ti.ord = 0 "
+            + "LEFT JOIN t.member m "
+            + "WHERE m.email = :email "
+            + "and t.complete is false")
+    List<TodoListDTO> getTodoListDTOByJoin(@Param("email") String email);
+
+    @Query("""
+        SELECT new com.project.mallapi.dto.TodoListDTO(
+            t.tno,
+            t.title,
+            t.content,
+            (
+                SELECT m.email FROM Member m
+                WHERE m = t.member
+            ),
+            t.complete,
+            t.dueDate,
+            (
+                SELECT ti.fileName FROM Todo t2 JOIN t2.imageList ti
+                WHERE t2 = t AND ti.ord = 0
+            )
+        ) 
+        FROM Todo t 
+        WHERE t.member.email = :email 
+        AND t.complete = false """)
+    List<TodoListDTO> getTodoListDTOBySubquery(@Param("email") String email);
+
+    @Query("SELECT new com.project.mallapi.dto.TodoListDTO(t.tno, t.title, t.content, m.email, t.complete, t.dueDate, ti.fileName) "
+            + "FROM Todo t "
+            + "LEFT JOIN t.imageList ti ON ti.ord = 0 "
+            + "LEFT JOIN t.member m "
+            + "WHERE m.email = :email "
+            + "and t.complete is false")
+    Page<TodoListDTO> getTodoListDTOByJoin(@Param("email") String email, Pageable pageable);
+
+    @Query("""
+        SELECT new com.project.mallapi.dto.TodoListDTO(
+            t.tno,
+            t.title,
+            t.content,
+            (
+                SELECT m.email FROM Member m
+                WHERE m = t.member
+            ),
+            t.complete,
+            t.dueDate,
+            (
+                SELECT ti.fileName FROM Todo t2 JOIN t2.imageList ti
+                WHERE t2 = t AND ti.ord = 0
+            )
+        ) 
+        FROM Todo t 
+        WHERE t.member.email = :email 
+        AND t.complete = false """)
+    Page<TodoListDTO> getTodoListDTOBySubquery(@Param("email") String email, Pageable pageable);
 
 }

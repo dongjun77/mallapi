@@ -10,7 +10,7 @@ import java.util.List;
 @Transactional
 public interface ProductService {
 
-    PageResponseDTO<ProductDTO> getList (PageRequestDTO pageRequestDTO);
+    PageResponseDTO<ProductListDTO> getList (PageRequestDTO pageRequestDTO);
 
     Long register(ProductDTO productDTO);
 

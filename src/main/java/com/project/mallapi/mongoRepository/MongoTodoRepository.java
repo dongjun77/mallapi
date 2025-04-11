@@ -1,6 +1,8 @@
 package com.project.mallapi.mongoRepository;
 
 import com.project.mallapi.document.Todo;
+import com.project.mallapi.dto.TodoListDTO;
+import com.project.mallapi.mongoRepository.custom.MongoTodoCustomRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -8,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-public interface MongoTodoRepository extends MongoRepository<Todo, String> {
+public interface MongoTodoRepository extends MongoRepository<Todo, String>, MongoTodoCustomRepository {
 
     // 특정 Todo 조회 (ID 기반)
 //    Optional<Todo> findById(String id);
@@ -25,7 +27,7 @@ public interface MongoTodoRepository extends MongoRepository<Todo, String> {
     @Query(value = "{ '_id' : ?0 }", fields = "{ 'memberEmail' : 1 }")
     Optional<String> findMemberEmailById(String id);
 
-    @Query(value = "{ 'complete' : true }")
+    @Query(value = "{ 'complete' : ?0 }")
     List<Todo> findAllByComplete(boolean b);
 
 //    @Query("{ 'member.$id' :  ?0 }")
@@ -33,5 +35,6 @@ public interface MongoTodoRepository extends MongoRepository<Todo, String> {
     List<Todo> findAllByMemberEmail(String memberEmail);
 
     Page<Todo> findAll(Pageable pageable);
+
 
 }

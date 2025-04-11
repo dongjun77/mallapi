@@ -6,6 +6,7 @@ import com.project.mallapi.domain.Product;
 import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.PageResponseDTO;
 import com.project.mallapi.dto.ProductDTO;
+import com.project.mallapi.dto.ProductListDTO;
 import java.util.UUID;
 import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
@@ -25,9 +26,9 @@ class ProductServiceTest {
 
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder().build();
 
-        PageResponseDTO<ProductDTO> responseDTO = productService.getList(pageRequestDTO);
+        PageResponseDTO<ProductListDTO> responseDTO = productService.getList(pageRequestDTO);
 
-        log.info(responseDTO.getDtoList());
+        log.info(responseDTO.toString());
     }
 
     @Test

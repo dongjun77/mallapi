@@ -39,14 +39,6 @@ public class TodoController {
 
     private final TodoService todoService;
 
-    @GetMapping("/view/{fileName}")
-    public ResponseEntity<Resource> viewFileGet(@PathVariable("fileName") String fileName) {
-        log.info("viewFileGet=================");
-        log.info("fileName:" + fileName);
-        return todoFileUtil.getFile(fileName);
-    }
-
-
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{tno}")
     public TodoDTO get(@PathVariable("tno") Long tno) {
@@ -60,6 +52,24 @@ public class TodoController {
         String memberEmail = principal.getName();
 
         return todoService.getList(pageRequestDTO, memberEmail);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/joinlist")
+    public PageResponseDTO<TodoListDTO> joinlist(PageRequestDTO pageRequestDTO, Principal principal) {
+
+        String memberEmail = principal.getName();
+
+        return todoService.getJoinList(pageRequestDTO, memberEmail);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/subquerylist")
+    public PageResponseDTO<TodoListDTO> subquerylist(PageRequestDTO pageRequestDTO, Principal principal) {
+
+        String memberEmail = principal.getName();
+
+        return todoService.getSubQueryList(pageRequestDTO, memberEmail);
     }
 
     @GetMapping("/recent")

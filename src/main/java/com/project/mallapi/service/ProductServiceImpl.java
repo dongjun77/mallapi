@@ -29,43 +29,48 @@ public class ProductServiceImpl implements ProductService {
     private final CustomFileUtil customFileUtil;
 
     @Override
-    public PageResponseDTO<ProductDTO> getList(PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ProductListDTO> getList(PageRequestDTO pageRequestDTO) {
 
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage()-1,
                 pageRequestDTO.getSize(),
                 Sort.by("pno").descending());
 
-        Page<Object[]> result = productRepository.selectList(pageable);
-
-        // object[] => 0 product 1 productImage
-        // object[] => 0 product 1 productImage
-        // object[] => 0 product 1 productImage
-
-        List<ProductDTO> dtoList = result.get().map(arr -> {
-            ProductDTO productDTO = null;
-
-            Product product = (Product) arr[0];
-            ProductImage productImage = (ProductImage) arr[1];
-
-            productDTO = ProductDTO.builder()
-                    .pno(product.getPno())
-                    .pname(product.getPname())
-                    .pdesc(product.getPdesc())
-                    .price(product.getPrice())
-                    .build();
-
-            String imageStr = productImage.getFileName();
+//        Page<Object[]> result = productRepository.selectList(pageable);
+//
+//         object[] => 0 product 1 productImage
+//         object[] => 0 product 1 productImage
+//         object[] => 0 product 1 productImage
+//        List<ProductDTO> dtoList = result.get().map(arr -> {
+//            ProductDTO productDTO = null;
+//
+//            Product product = (Product) arr[0];
+//            ProductImage productImage = (ProductImage) arr[1];
+//
+//            productDTO = ProductDTO.builder()
+//                    .pno(product.getPno())
+//                    .pname(product.getPname())
+//                    .pdesc(product.getPdesc())
+//                    .price(product.getPrice())
+//                    .build();
+//
+//            String imageStr = productImage.getFileName();
 //            if (imageStr == null) {
 //                imageStr = "default.jpeg";
 //            }
-            productDTO.setUploadFileNames(List.of(imageStr));
+//            productDTO.setUploadFileNames(List.of(imageStr));
+//
+//            return productDTO;
+//        }).collect(Collectors.toList());
+//
+//        long totalCount = result.getTotalElements();
 
-            return productDTO;
-        }).collect(Collectors.toList());
+        Page<ProductListDTO> result = productRepository.getList(pageable);
+
+        List<ProductListDTO> dtoList = result.getContent();
 
         long totalCount = result.getTotalElements();
 
-        return PageResponseDTO.<ProductDTO>withAll()
+        return PageResponseDTO.<ProductListDTO>withAll()
                 .dtoList(dtoList)
                 .totalCount(totalCount)
                 .pageRequestDTO(pageRequestDTO)

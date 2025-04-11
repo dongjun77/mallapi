@@ -1,5 +1,6 @@
 package com.project.mallapi.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,6 +32,7 @@ public class Member {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<MemberRole> memberRoleList = new ArrayList<>();
 
     public void addRole(MemberRole memberRole) {

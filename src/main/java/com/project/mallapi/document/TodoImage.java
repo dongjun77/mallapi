@@ -16,7 +16,6 @@ public class TodoImage {
 
     private String fileName;
 
-    @Indexed
     private int ord;
 
     public void setOrd(int ord) {

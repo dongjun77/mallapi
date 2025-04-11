@@ -27,6 +27,10 @@ public interface TodoService {
 
     PageResponseDTO<TodoListDTO> getList(PageRequestDTO pageRequestDTO, String email);
 
+    PageResponseDTO<TodoListDTO> getJoinList(PageRequestDTO pageRequestDTO, String email);
+
+    PageResponseDTO<TodoListDTO> getSubQueryList(PageRequestDTO pageRequestDTO, String email);
+
     List<TodoListDTO> getRecent();
 
     List<TodoListDTO> getDeadline();
@@ -42,7 +46,7 @@ public interface TodoService {
                 .content(todo.getContent())
                 .complete(todo.isComplete())
                 .dueDate(todo.getDueDate())
-                .memberEmail(todo.getMember().getEmail())
+//                .memberEmail(todo.getMember().getEmail())
                 .build();
 
         List<TodoImage> imageList = todo.getImageList();
@@ -70,7 +74,7 @@ public interface TodoService {
                 .build();
 
         if (member != null) {
-            todo.addMember(member);
+//            todo.addMember(member);
         }
 
         List<String> uploadFileNames = todoDTO.getUploadFileNames();

@@ -127,6 +127,48 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
+    public PageResponseDTO<TodoListDTO> getJoinList(PageRequestDTO pageRequestDTO, String email) {
+
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage()-1,
+                pageRequestDTO.getSize(),
+                Sort.by("dueDate").descending());
+
+        Page<TodoListDTO> result = todoRepository.getTodoListDTOByJoin(email, pageable);
+
+        List<TodoListDTO> dtoList = result.getContent();
+
+        long totalCount = result.getTotalElements();
+
+        return PageResponseDTO.<TodoListDTO>withAll()
+                .dtoList(dtoList)
+                .totalCount(totalCount)
+                .pageRequestDTO(pageRequestDTO)
+                .build();
+    }
+
+    @Override
+    public PageResponseDTO<TodoListDTO> getSubQueryList(PageRequestDTO pageRequestDTO, String email) {
+
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage()-1,
+                pageRequestDTO.getSize(),
+                Sort.by("dueDate").descending());
+
+        Page<TodoListDTO> result = todoRepository.getTodoListDTOBySubquery(email, pageable);
+
+        List<TodoListDTO> dtoList = result.getContent();
+
+        long totalCount = result.getTotalElements();
+
+        return PageResponseDTO.<TodoListDTO>withAll()
+                .dtoList(dtoList)
+                .totalCount(totalCount)
+                .pageRequestDTO(pageRequestDTO)
+                .build();
+    }
+
+    @Override
     public List<TodoListDTO> getRecent() {
 
         List<TodoListDTO> result = todoRepository.getRecentTodoList();

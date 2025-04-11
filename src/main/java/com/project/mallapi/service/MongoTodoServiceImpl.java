@@ -34,17 +34,16 @@ public class MongoTodoServiceImpl implements MongoTodoService {
     public PageResponseDTO<MongoTodoListDTO> pageMongoTodoList(String email, PageRequestDTO pageRequestDTO) {
 
         Pageable pageable = PageRequest.of(
-                pageRequestDTO.getPage(),
+                pageRequestDTO.getPage()-1,
                 pageRequestDTO.getSize(),
                 Sort.by("id").descending());
 
-        Page<Todo> result =
-                mongoTodoRepository.findAllByMemberEmailAndCompleteIsFalse(email, pageable);
+        Page<MongoTodoListDTO> result =
+                mongoTodoRepository.findTodoListDTOByMemberEmail(email, pageable);
+
+        List<MongoTodoListDTO> dtoList = result.getContent();
 
         long totalCount = result.getTotalElements();
-
-        List<MongoTodoListDTO> dtoList = result.getContent().stream()
-                .map(todo -> entityToMongoTodoListDTO(todo)).toList();
 
         return PageResponseDTO.<MongoTodoListDTO>withAll()
                 .dtoList(dtoList)

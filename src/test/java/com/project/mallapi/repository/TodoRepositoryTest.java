@@ -1,9 +1,13 @@
 package com.project.mallapi.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.project.mallapi.domain.Member;
 import com.project.mallapi.domain.Todo;
 import com.project.mallapi.dto.PageRequestDTO;
 import com.project.mallapi.dto.TodoListDTO;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -43,12 +47,12 @@ class TodoRepositoryTest {
         Member member = memberRepository.findById("user1@aaa.com")
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-        for (int i = 1; i <= 10000; i++) {
+        for (int i = 1; i <= 9000; i++) {
 
             Todo todo = Todo.builder()
                     .title("title"+i)
                     .content("Content..."+i)
-                    .dueDate(LocalDate.of(2025,3,1))
+                    .dueDate(LocalDate.of(2025,4,3))
                     .member(member)
                     .complete(false)
                     .build();
@@ -63,6 +67,138 @@ class TodoRepositoryTest {
         long endTime = System.currentTimeMillis(); // 종료 시간 기록
         long duration = endTime - startTime; // 실행 시간 계산
 
+        log.info("걸린시간 : {} ms", duration);
+    }
+
+    @Test
+    public void dbtest_testfindAll() throws JsonProcessingException {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        List<Todo> result = todoRepository.findAll();
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String json = objectMapper.writeValueAsString(result);
+        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+
+
+        log.info(result);
+        log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
+        log.info("전송 데이터 크기: " + bytes.length + " bytes");
+    }
+
+    @Test
+    public void dbtest_TodoListDTO_page_join() throws JsonProcessingException {
+
+        Pageable pageable = PageRequest.of(999, 10, Sort.by("dueDate").descending());
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        Page<TodoListDTO> result = todoRepository.getTodoListDTOByJoin("user1@aaa.com", pageable);
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String json = objectMapper.writeValueAsString(result);
+        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+
+        log.info(result.getContent());
+        log.info(result.getTotalElements());
+        log.info(result.getSize());
+        log.info("걸린시간 : {} ms", duration);
+        log.info("전송 데이터 크기: " + bytes.length + " bytes");
+    }
+
+    @Test
+    public void dbtest_TodoListDTO_page_subquery() throws JsonProcessingException {
+
+        Pageable pageable = PageRequest.of(9990, 10, Sort.by("dueDate").descending());
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        Page<TodoListDTO> result = todoRepository.getTodoListDTOBySubquery("user1@aaa.com", pageable);
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String json = objectMapper.writeValueAsString(result);
+        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+
+        log.info(result.getContent());
+        log.info(result.getTotalElements());
+        log.info(result.getSize());
+        log.info("걸린시간 : {} ms", duration);
+        log.info("전송 데이터 크기: " + bytes.length + " bytes");
+    }
+
+    @Test
+    public void dbtest_TodoListDTO_join() throws JsonProcessingException {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        List<TodoListDTO> result = todoRepository.getTodoListDTOByJoin("user1@aaa.com");
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String json = objectMapper.writeValueAsString(result);
+        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+
+
+        log.info(result);
+        log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
+        log.info("전송 데이터 크기: " + bytes.length + " bytes");
+    }
+
+    @Test
+    public void dbtest_TodoListDTO_subquery() throws JsonProcessingException {
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        List<TodoListDTO> result = todoRepository.getTodoListDTOBySubquery("user1@aaa.com");
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String json = objectMapper.writeValueAsString(result);
+        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+
+
+        log.info(result);
+        log.info(result.size());
+        log.info("걸린시간 : {} ms", duration);
+        log.info("전송 데이터 크기: " + bytes.length + " bytes");
+    }
+
+    @Test
+    public void dbtest_testRead() {
+
+        Long tno = 2L;
+
+        long startTime = System.currentTimeMillis(); // 시작 시간 기록
+
+        Optional<Todo> result = todoRepository.findById(tno);
+        Todo todo = result.orElseThrow();
+
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        long duration = endTime - startTime; // 실행 시간 계산
+
+        log.info(todo);
         log.info("걸린시간 : {} ms", duration);
     }
 
@@ -90,35 +226,19 @@ class TodoRepositoryTest {
     }
 
     @Test
-    public void dbtest_testRead() {
-
-        Long tno = 2L;
+    public void dbtest_testDelete() {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
-        Optional<Todo> result = todoRepository.findById(tno);
-        Todo todo = result.orElseThrow();
+        // 먼저 로딩 하고 엔티티 객체를 변경 /setter
+        Long tno = 6L;
+        todoRepository.deleteById(tno);
 
         long endTime = System.currentTimeMillis(); // 종료 시간 기록
         long duration = endTime - startTime; // 실행 시간 계산
 
-        log.info(todo);
         log.info("걸린시간 : {} ms", duration);
-    }
 
-    @Test
-    public void dbtest_testfindAll() {
-
-        long startTime = System.currentTimeMillis(); // 시작 시간 기록
-
-        List<Todo> result = todoRepository.findAll();
-
-        long endTime = System.currentTimeMillis(); // 종료 시간 기록
-        long duration = endTime - startTime; // 실행 시간 계산
-
-        log.info(result);
-        log.info(result.size());
-        log.info("걸린시간 : {} ms", duration);
     }
 
     @Test
@@ -126,7 +246,7 @@ class TodoRepositoryTest {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
-        List<Todo> result = todoRepository.findByComplete(true);
+        List<Todo> result = todoRepository.findByComplete(false);
 
         long endTime = System.currentTimeMillis(); // 종료 시간 기록
         long duration = endTime - startTime; // 실행 시간 계산
@@ -141,7 +261,7 @@ class TodoRepositoryTest {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
 
-        List<Todo> result = todoRepository.findByMember("user4@aaa.com");
+        List<Todo> result = todoRepository.findAllByMemberEmail("user1@aaa.com");
 
         long endTime = System.currentTimeMillis(); // 종료 시간 기록
         long duration = endTime - startTime; // 실행 시간 계산
@@ -156,7 +276,7 @@ class TodoRepositoryTest {
 
         long startTime = System.currentTimeMillis(); // 시작 시간 기록
         // 페이지 번호는 0부터
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("tno").descending());
+        Pageable pageable = PageRequest.of(0, 10000, Sort.by("tno").descending());
 
         Page<Todo> result = todoRepository.getAll(pageable);
 

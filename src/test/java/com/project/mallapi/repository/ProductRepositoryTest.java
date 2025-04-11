@@ -109,6 +109,8 @@ class ProductRepositoryTest {
 
         result.getContent().forEach(arr -> log.info(Arrays.toString(arr)));
 
+        log.info(result.toString());
+
     }
 
     @Test

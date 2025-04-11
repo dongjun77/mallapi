@@ -60,13 +60,13 @@ public class ProductController {
 
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     @GetMapping("/list")
-    public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO) {
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         return productService.getList(pageRequestDTO);
     }
 

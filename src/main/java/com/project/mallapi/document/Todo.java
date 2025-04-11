@@ -29,7 +29,7 @@ public class Todo {
 
     private boolean complete;
 
-    @Indexed
+//    @Indexed
     private LocalDate dueDate;
 
     @Builder.Default

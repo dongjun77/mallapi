@@ -3,19 +3,15 @@ spring:
     name: mallapi
 
   datasource:
-    url: jdbc:mysql://localhost:3306/malldb
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: malldbuser
-    password: malldbuser
-#    url: jdbc:postgresql://localhost:5432/malldb
-#    driver-class-name: org.postgresql.Driver
-#    username: postgres
-#    password: postgres
-#  data:
-#    mongodb:
-#      uri: mongodb://localhost:27017/malldb
-#  main:
-#    allow-bean-definition-overriding: true
+#    url: jdbc:mysql://localhost:3306/malldb
+#    url : jdbc:mysql://instagram-db.cv2i2iyuwful.ap-northeast-2.rds.amazonaws.com/malldb
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: malldbuser
+#    password: malldbuser
+    url: jdbc:postgresql://localhost:5432/malldb
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
 
   jpa:
     hibernate:
@@ -37,6 +33,7 @@ logging:
 #    org.springframework.data.mongodb.core: DEBUG
 #    org.mongodb.driver: DEBUG
 
+# local file
 org:
   zerock:
     upload:

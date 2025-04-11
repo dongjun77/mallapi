@@ -24,8 +24,20 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     @Query("update Product p set p.delFlag = :delFlag where p.pno = :pno")
     void updateToDelete(@Param("pno")Long pno, @Param("delFlag") boolean flag);
 
+
+//    @Query("select p, pi "
+//            + "from Product p "
+//            + "left join p.imageList pi on pi.ord = 0"
+//            + "where p.delFlag = false ")
     @Query("select p, pi from Product p left join p.imageList pi where pi.ord = 0 and p.delFlag = false ")
     Page<Object[]> selectList(Pageable pageable);
+
+    @Query("SELECT new com.project.mallapi.dto.ProductListDTO(p.pno, p.pname, p.price, p.pdesc, pi.fileName) "
+            + "FROM Product p "
+            + "LEFT JOIN p.imageList pi ON pi.ord = 0 "
+            + "WHERE p.delFlag is false "
+            + "ORDER BY p.pno DESC ")
+    Page<ProductListDTO> getList(Pageable pageable);
 
     @Query("SELECT new com.project.mallapi.dto.ProductListDTO(p.pno, p.pname, p.price, p.pdesc, pi.fileName) "
             + "FROM Product p "
