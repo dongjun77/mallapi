@@ -24,7 +24,7 @@ public class MongoConfig {
 
     @Bean
     public MongoClient mongodbClient() {
-        return MongoClients.create("mongodb://localhost:27017/malldb");
+        return MongoClients.create("mongodb+srv://malldbuser:malldbuser@malldb.5xfb2n6.mongodb.net/");
     }
 
     @Bean

@@ -8,10 +8,10 @@ spring:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    username: malldbuser
 #    password: malldbuser
-    url: jdbc:postgresql://localhost:5432/malldb
+    url: jdbc:postgresql://mallapi-postgres.cv2i2iyuwful.ap-northeast-2.rds.amazonaws.com:5432/malldb
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: postgres
+    password: postgres123
 
   jpa:
     hibernate:
@@ -37,9 +37,6 @@ logging:
 org:
   zerock:
     upload:
-      todo:
-        path: upload/todo_files
-      product:
-        path: upload/product_files
       mongotodo:
         path: upload/mongotodo_files
+

@@ -51,12 +51,12 @@ public class ProductController {
 //        return Map.of("RESULT", "SUCCESS");
 //    }
 
-    @GetMapping("/view/{fileName}")
-    public ResponseEntity<Resource> viewFileGet(@PathVariable("fileName") String fileName) {
-        log.info("viewFileGet=================");
-        log.info("fileName:" + fileName);
-        return fileUtil.getFile(fileName);
-    }
+//    @GetMapping("/view/{fileName}")
+//    public ResponseEntity<Resource> viewFileGet(@PathVariable("fileName") String fileName) {
+//        log.info("viewFileGet=================");
+//        log.info("fileName:" + fileName);
+//        return fileUtil.getFile(fileName);
+//    }
 
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     @GetMapping("/list")

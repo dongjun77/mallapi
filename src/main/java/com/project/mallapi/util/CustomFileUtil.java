@@ -1,7 +1,12 @@
 package com.project.mallapi.util;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import jakarta.annotation.PostConstruct;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,52 +27,53 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @Log4j2
+@RequiredArgsConstructor
 public class CustomFileUtil {
 
-    @Value("${org.zerock.upload.product.path}")
-    private String uploadPath;
+    private final AmazonS3 amazonS3;
 
-    @PostConstruct //Spring이 빈을 생성한 후 실행되는 메서드
-    public void init() {
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
-        File tempFolder = new File(uploadPath);
-
-        if (!tempFolder.exists()) {
-            tempFolder.mkdir();
-        }
-
-        uploadPath = tempFolder.getAbsolutePath();
-
-        log.info("------------------");
-        log.info(uploadPath);
-
-    }
-
+    // S3 업로드 (원본 + 썸네일)
     public List<String> saveFiles(List<MultipartFile> files) throws RuntimeException {
 
-        if(files == null || files.size() == 0) {
-            return null;
+        if (files == null || files.isEmpty()) {
+            log.warn("🚨 saveFiles: 파일이 없음!");
+            return new ArrayList<>();
         }
 
         List<String> uploadNames = new ArrayList<>();
 
-        for(MultipartFile file : files) {
-            String savedName = UUID.randomUUID().toString()+"_"+file.getOriginalFilename();
-
-            Path savePath = Paths.get(uploadPath, savedName);
+        for (MultipartFile file : files) {
+            String folder = "product";
 
             try {
-                Files.copy(file.getInputStream(), savePath); // 원본 파일 업로드
+                // [1] 원본 업로드
+                String savedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                String key = folder + "/" + savedName; // S3의 Key는 '폴더명/파일명'으로 작성
 
-                String contentType = file.getContentType(); // Mime type
+                File tempFile = convert(file);
+                amazonS3.putObject(new PutObjectRequest(bucket, key, tempFile)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
 
-                // 이미지 파일이라면
-                if(contentType != null || contentType.startsWith("image")) {
+                String contentType = file.getContentType();
 
-                    Path thumbnailPath = Paths.get(uploadPath, "s_" + savedName);
+                if(contentType != null && contentType.startsWith("image")) {
 
-                    Thumbnails.of(savePath.toFile()).size(200,200).toFile(thumbnailPath.toFile());
+                    String thumbnailName = "s_" + savedName; // thumbnail 파일명
+                    String thumbnailKey = folder + "/" + thumbnailName; // S3의 Key는 '폴더명/파일명'으로 작성
+
+                    File thumbnailFile = new File(System.getProperty("java.io.tmpdir") + "/" + thumbnailName);
+                    Thumbnails.of(tempFile).size(200, 200).toFile(thumbnailFile);
+
+                    amazonS3.putObject(new PutObjectRequest(bucket, thumbnailKey, thumbnailFile)
+                            .withCannedAcl(CannedAccessControlList.PublicRead));
+                    thumbnailFile.delete();
+
                 }
+
+                tempFile.delete();
 
                 uploadNames.add(savedName);
 
@@ -78,48 +85,29 @@ public class CustomFileUtil {
         return uploadNames;
     }
 
-    public ResponseEntity<Resource> getFile(String fileName) {
-
-        Resource resource = new FileSystemResource(uploadPath+File.separator+fileName);
-
-        if (!resource.isReadable()) { // fileName이 존재하지 않다면
-            resource = new FileSystemResource(uploadPath+File.separator+"default.jpeg");
-        }
-        HttpHeaders headers = new HttpHeaders();
-
-        try {
-            headers.add("Content-Type", Files.probeContentType(resource.getFile().toPath()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return ResponseEntity.ok().headers(headers).body(resource);
-
-    }
-
+    // S3 삭제
     public void deleteFiles(List<String> fileNames) {
 
-        if(fileNames == null || fileNames.isEmpty()) {
+        if (fileNames == null || fileNames.isEmpty()) {
             return;
         }
 
         fileNames.forEach(fileName -> {
-
-            // 썸네일 삭제
-            String thumbnailnameFileName = "s_" + fileName;
-
-            Path thumbnailPath = Paths.get(uploadPath, thumbnailnameFileName);
-            Path filePath = Paths.get(uploadPath, fileName);
-
             try {
-                Files.deleteIfExists(filePath);
-                Files.deleteIfExists(thumbnailPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e.getMessage());
+                amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+                amazonS3.deleteObject(new DeleteObjectRequest(bucket, "s_" + fileName));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-
         });
-
     }
 
+    // MultipartFile → File 변환
+    private File convert(MultipartFile file) throws IOException {
+        File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + file.getOriginalFilename());
+        try (FileOutputStream fos = new FileOutputStream(convFile)) {
+            fos.write(file.getBytes());
+        }
+        return convFile;
+    }
 }

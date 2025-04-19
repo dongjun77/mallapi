@@ -74,7 +74,7 @@ public interface TodoService {
                 .build();
 
         if (member != null) {
-//            todo.addMember(member);
+            todo.addMember(member);
         }
 
         List<String> uploadFileNames = todoDTO.getUploadFileNames();

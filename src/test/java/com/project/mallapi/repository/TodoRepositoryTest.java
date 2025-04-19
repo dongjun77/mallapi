@@ -47,7 +47,7 @@ class TodoRepositoryTest {
         Member member = memberRepository.findById("user1@aaa.com")
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-        for (int i = 1; i <= 9000; i++) {
+        for (int i = 1; i <= 10; i++) {
 
             Todo todo = Todo.builder()
                     .title("title"+i)
